@@ -1,0 +1,23 @@
+\begin{table}[t]
+\centering
+\caption{Closed-set accuracy and FPR@95 (\%) for unknown-species detection.}
+\label{tab:fpr95}
+\setlength{\tabcolsep}{3.5pt}
+\footnotesize
+\begin{tabular}{llccccccc}
+\toprule
+Backbone & Variant & MB & Acc. (\%) & MSP & MaxLogit & Energy & kNN & Mahal. \\
+\midrule
+MobileNetV3-L & FP32 & 16.3 & 99.19$\pm$0.54 & 13.7$\pm$10.8 & 12.5$\pm$7.4 & 12.7$\pm$7.8 & 7.9$\pm$5.9 & 9.8$\pm$5.8 \\
+ & PTQ INT8 & 4.2 & 98.40$\pm$1.20 & 22.7$\pm$14.6$^{**}$ & 19.3$\pm$10.3$^{**}$ & 20.2$\pm$11.1$^{**}$ & 10.7$\pm$5.6$^{**}$ & 13.2$\pm$6.4$^{**}$ \\
+ & FP32 + FT & 16.3 & 99.20$\pm$0.45 & 11.5$\pm$7.0 & 11.0$\pm$4.9 & 11.1$\pm$4.9 & 7.9$\pm$6.0 & 9.3$\pm$5.1 \\
+ & QAT INT8 & 4.2 & 99.16$\pm$0.44 & 15.4$\pm$9.2$^{**}$ & 15.9$\pm$8.2$^{**}$ & 16.2$\pm$8.7$^{**}$ & 8.1$\pm$6.3 & 10.3$\pm$5.1 \\
+\midrule
+ResNet-18 & FP32 & 42.7 & 99.26$\pm$0.45 & 14.4$\pm$8.9 & 15.0$\pm$7.7 & 15.2$\pm$8.0 & 8.4$\pm$3.7 & 7.5$\pm$4.5 \\
+ & PTQ INT8 & 10.7 & 99.16$\pm$0.46 & 15.5$\pm$9.2$^{*}$ & 15.8$\pm$7.6 & 16.0$\pm$7.6 & 8.4$\pm$3.7 & 7.7$\pm$5.6 \\
+ & FP32 + FT & 42.7 & 99.30$\pm$0.43 & 13.9$\pm$7.1 & 14.7$\pm$6.4 & 14.9$\pm$6.5 & 8.6$\pm$3.6 & 7.1$\pm$3.9 \\
+ & QAT INT8 & 10.7 & 99.30$\pm$0.39 & 14.4$\pm$7.1 & 14.8$\pm$6.4 & 15.0$\pm$6.3 & 8.5$\pm$3.7 & 7.3$\pm$4.3 \\
+\bottomrule
+\end{tabular}
+\\[2pt]\parbox{\linewidth}{\scriptsize Mean $\pm$ std over 10 seeds (random known/unknown species splits); lower is better. FP32 + FT: same fine-tuning as QAT without quantization. Paired Wilcoxon test against the uncompressed reference (PTQ vs.\ FP32, QAT vs.\ FP32 + FT): $^{*}p<0.05$, $^{**}p<0.01$.}
+\end{table}

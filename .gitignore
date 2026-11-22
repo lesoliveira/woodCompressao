@@ -1,0 +1,17 @@
+# dados e artefatos grandes (ficam so na maquina local)
+base/
+base micro/
+cache/
+*/ckpt/
+*/scores/
+results_*/ckpt/
+results_*/scores/
+teste/
+_check/
+_repo_snapshot.tgz
+*.log
+# python
+__pycache__/
+*.pyc
+.venv/
+.DS_Store

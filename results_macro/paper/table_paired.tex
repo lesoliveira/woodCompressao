@@ -1,0 +1,21 @@
+\begin{table}[t]
+\centering
+\caption{Paired differences caused by INT8 quantization (percentage points, mean over seeds; in parentheses, seeds in which the quantized model was worse).}
+\label{tab:paired}
+\setlength{\tabcolsep}{3pt}
+\footnotesize
+\begin{tabular}{llcccccc}
+\toprule
+ & & & \multicolumn{5}{c}{$\Delta$FPR@95 (pp)} \\
+\cmidrule(lr){4-8}
+Backbone & Comparison & $\Delta$Acc. (pp) & MSP & MaxLogit & Energy & kNN & Mahal. \\
+\midrule
+MobileNetV3-L & PTQ vs. FP32 & -0.79$^{*}$ (7) & +9.1$^{**}$ (9) & +6.8$^{**}$ (10) & +7.4$^{**}$ (10) & +2.8$^{**}$ (10) & +3.3$^{**}$ (10) \\
+ & QAT vs. FT control & -0.04 (3) & +4.0$^{**}$ (10) & +4.9$^{**}$ (10) & +5.1$^{**}$ (10) & +0.2 (5) & +1.1 (8) \\
+\midrule
+ResNet-18 & PTQ vs. FP32 & -0.10 (3) & +1.1$^{*}$ (8) & +0.8 (6) & +0.8 (6) & +0.0 (6) & +0.2 (5) \\
+ & QAT vs. FT control & +0.00 (1) & +0.4 (6) & +0.2 (7) & +0.0 (6) & -0.1 (4) & +0.2 (4) \\
+\bottomrule
+\end{tabular}
+\\[2pt]\parbox{\linewidth}{\scriptsize Paired Wilcoxon test: $^{*}p<0.05$, $^{**}p<0.01$.}
+\end{table}
