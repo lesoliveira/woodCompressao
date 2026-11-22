@@ -35,6 +35,20 @@ PATCH = 224
 # Reprodutibilidade e dispositivo
 # ---------------------------------------------------------------------------
 
+def raise_open_files_limit(target=16384):
+    """O macOS limita a 256 arquivos abertos por processo. Os workers do DataLoader (spawn) usam
+    pipes e descritores, e um processo que treina varios modelos seguidos estoura esse limite
+    (OSError: [Errno 24] Too many open files). Sobe o limite ate o maximo permitido."""
+    try:
+        import resource
+        soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+        want = target if hard == resource.RLIM_INFINITY else min(target, hard)
+        if soft < want:
+            resource.setrlimit(resource.RLIMIT_NOFILE, (want, hard))
+    except (ImportError, ValueError, OSError):
+        pass
+
+
 def set_seed(seed):
     random.seed(seed)
     np.random.seed(seed)
@@ -200,7 +214,8 @@ def build_cache(samples, root, cache_dir, short_side):
         if out.exists():
             continue
         out.parent.mkdir(parents=True, exist_ok=True)
-        im = Image.open(p).convert("RGB")
+        with Image.open(p) as f:
+            im = f.convert("RGB")
         w, h = im.size
         s = short_side / min(w, h)
         im = im.resize((max(PATCH, round(w * s)), max(PATCH, round(h * s))), Image.BICUBIC)
@@ -245,12 +260,14 @@ class TrainCrops(Dataset):
 
     def __getitem__(self, i):
         p, y = self.items[i // self.k]
-        im = Image.open(self.cache[p]).convert("RGB")
+        with Image.open(self.cache[p]) as f:
+            im = f.convert("RGB")
         return NORM(self.aug(im)), y
 
 
 def load_patches(path, max_patches=0):
-    im = Image.open(path).convert("RGB")
+    with Image.open(path) as f:
+        im = f.convert("RGB")
     return torch.stack([NORM(im.crop(b)) for b in grid_boxes(*im.size, max_patches)])
 
 

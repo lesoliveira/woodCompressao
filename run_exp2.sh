@@ -26,6 +26,9 @@ if [[ "$(uname)" == "Darwin" && -z "${CAFFEINATED:-}" ]]; then
     exec caffeinate -dims bash "$0" "$@"
 fi
 
+# o macOS limita a 256 arquivos abertos por processo; sobe o limite (os scripts Python tambem tentam)
+ulimit -n 16384 2>/dev/null || ulimit -n "$(ulimit -Hn)" 2>/dev/null || true
+
 FIRST=${1:-1}
 LAST=${2:-6}
 SEEDS=(0 1 2 3 4 5 6 7 8 9)

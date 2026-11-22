@@ -195,6 +195,7 @@ def layer_error(fp32, qm, name, items, cache_map, args):
 
 def main():
     args = parse()
+    F.raise_open_files_limit()
     out = Path(args.out)
     engine = F.pick_qengine(args.qengine)
     print(f"[info] torch {torch.__version__} | engine INT8 = {engine}")

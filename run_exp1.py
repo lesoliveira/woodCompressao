@@ -129,6 +129,7 @@ def evaluate(model, name, split, cache_map, args, ctx):
 
 def main():
     args = parse()
+    F.raise_open_files_limit()
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     dname = args.dataset_name or Path(args.data).resolve().name
