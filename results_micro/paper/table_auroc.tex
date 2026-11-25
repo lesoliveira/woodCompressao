@@ -1,0 +1,28 @@
+\begin{table}[t]
+\centering
+\caption{Closed-set accuracy and AUROC (\%) for unknown-species detection.}
+\label{tab:auroc}
+\setlength{\tabcolsep}{3.5pt}
+\footnotesize
+\begin{tabular}{llccccccc}
+\toprule
+Backbone & Variant & MB & Acc. (\%) & MSP & MaxLogit & Energy & kNN & Mahal. \\
+\midrule
+MobileNetV3-L & FP32 & 16.5 & 99.05$\pm$0.78 & 98.40$\pm$1.00 & 98.08$\pm$1.01 & 97.97$\pm$1.06 & 95.90$\pm$1.21 & 98.67$\pm$0.76 \\
+ & PTQ INT8 & 4.2 & 98.74$\pm$1.01 & 97.32$\pm$1.39$^{**}$ & 96.57$\pm$1.33$^{**}$ & 96.32$\pm$1.40$^{**}$ & 95.34$\pm$1.33$^{**}$ & 98.42$\pm$0.62$^{*}$ \\
+ & FP32 + FT & 16.5 & 99.14$\pm$0.72 & 98.16$\pm$1.39 & 97.76$\pm$1.79 & 97.64$\pm$1.90 & 95.89$\pm$1.19 & 98.74$\pm$0.66 \\
+ & QAT INT8 & 4.2 & 99.10$\pm$0.93 & 98.16$\pm$0.90 & 97.73$\pm$0.79 & 97.60$\pm$0.82 & 95.55$\pm$1.41$^{**}$ & 98.58$\pm$0.60$^{*}$ \\
+\midrule
+ResNet-18 & FP32 & 42.8 & 98.92$\pm$0.57 & 97.77$\pm$0.97 & 97.69$\pm$1.07 & 97.64$\pm$1.09 & 96.38$\pm$1.13 & 98.70$\pm$0.39 \\
+ & PTQ INT8 & 10.7 & 98.83$\pm$0.61 & 97.64$\pm$1.08$^{*}$ & 97.55$\pm$1.17$^{*}$ & 97.50$\pm$1.21$^{*}$ & 96.33$\pm$1.14$^{*}$ & 98.69$\pm$0.41 \\
+ & FP32 + FT & 42.8 & 98.92$\pm$0.61 & 98.08$\pm$0.50 & 98.00$\pm$0.52 & 97.97$\pm$0.51 & 96.47$\pm$1.06 & 98.72$\pm$0.40 \\
+ & QAT INT8 & 10.7 & 99.01$\pm$0.59 & 98.07$\pm$0.59 & 98.05$\pm$0.56 & 98.02$\pm$0.56 & 96.42$\pm$1.09 & 98.70$\pm$0.39 \\
+\midrule
+MobileNetV2 & FP32 & 9.0 & 99.23$\pm$0.52 & 98.28$\pm$0.70 & 98.31$\pm$0.84 & 98.27$\pm$0.88 & 97.19$\pm$1.08 & 98.97$\pm$0.38 \\
+ & PTQ INT8 & 2.3 & 99.05$\pm$0.69 & 97.70$\pm$1.25$^{**}$ & 97.51$\pm$1.48$^{**}$ & 97.44$\pm$1.55$^{**}$ & 96.85$\pm$1.10$^{*}$ & 98.98$\pm$0.38 \\
+ & FP32 + FT & 9.0 & 99.19$\pm$0.51 & 98.37$\pm$0.53 & 98.45$\pm$0.65 & 98.44$\pm$0.67 & 97.16$\pm$1.00 & 99.00$\pm$0.33 \\
+ & QAT INT8 & 2.3 & 99.14$\pm$0.69 & 98.01$\pm$1.06 & 98.13$\pm$1.06 & 98.09$\pm$1.09 & 96.79$\pm$1.25 & 98.91$\pm$0.40 \\
+\bottomrule
+\end{tabular}
+\\[2pt]\parbox{\linewidth}{\scriptsize Mean $\pm$ std over 10 seeds (random known/unknown species splits); higher is better. FP32 + FT: same fine-tuning as QAT without quantization. Paired Wilcoxon test against the uncompressed reference (PTQ vs.\ FP32, QAT vs.\ FP32 + FT): $^{*}p<0.05$, $^{**}p<0.01$.}
+\end{table}

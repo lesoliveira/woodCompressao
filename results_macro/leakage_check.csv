@@ -1,4 +1,24 @@
 backbone,comparison,detector,subset,acc_ref,d_acc_pp,fpr95_ref,d_fpr95_pp,seeds_worse,p
+mobilenet_v2,ptq_int8 vs fp32,energy,all,99.3711,-0.143,20.2434,2.2129,8,0.0488
+mobilenet_v2,qat_int8_lr1e-4 vs fp32_ft_lr1e-4,energy,all,99.371,-0.0374,19.5116,2.8496,7,0.2754
+mobilenet_v2,ptq_int8 vs fp32,energy,clean,99.3443,-0.1479,20.6459,2.3585,8,0.0488
+mobilenet_v2,qat_int8_lr1e-4 vs fp32_ft_lr1e-4,energy,clean,99.3445,-0.0397,19.7998,3.0449,7,0.1934
+mobilenet_v2,ptq_int8 vs fp32,knn,all,99.3711,-0.143,7.9682,0.0469,4,0.625
+mobilenet_v2,qat_int8_lr1e-4 vs fp32_ft_lr1e-4,knn,all,99.371,-0.0374,7.7785,0.7512,6,0.1172
+mobilenet_v2,ptq_int8 vs fp32,knn,clean,99.3443,-0.1479,7.8075,0.1772,5,1.0
+mobilenet_v2,qat_int8_lr1e-4 vs fp32_ft_lr1e-4,knn,clean,99.3445,-0.0397,7.5582,0.7891,7,0.1055
+mobilenet_v2,ptq_int8 vs fp32,mahalanobis,all,99.3711,-0.143,6.9119,0.0655,2,0.3223
+mobilenet_v2,qat_int8_lr1e-4 vs fp32_ft_lr1e-4,mahalanobis,all,99.371,-0.0374,6.5769,0.4576,5,0.5898
+mobilenet_v2,ptq_int8 vs fp32,mahalanobis,clean,99.3443,-0.1479,7.1464,0.0954,2,0.2969
+mobilenet_v2,qat_int8_lr1e-4 vs fp32_ft_lr1e-4,mahalanobis,clean,99.3445,-0.0397,6.8857,0.5562,6,0.2754
+mobilenet_v2,ptq_int8 vs fp32,maxlogit,all,99.3711,-0.143,19.7197,1.9958,8,0.0645
+mobilenet_v2,qat_int8_lr1e-4 vs fp32_ft_lr1e-4,maxlogit,all,99.371,-0.0374,19.0092,2.6609,7,0.1934
+mobilenet_v2,ptq_int8 vs fp32,maxlogit,clean,99.3443,-0.1479,20.0913,2.1374,8,0.1055
+mobilenet_v2,qat_int8_lr1e-4 vs fp32_ft_lr1e-4,maxlogit,clean,99.3445,-0.0397,19.2584,2.8702,7,0.2324
+mobilenet_v2,ptq_int8 vs fp32,msp,all,99.3711,-0.143,14.76,1.83,6,0.4316
+mobilenet_v2,qat_int8_lr1e-4 vs fp32_ft_lr1e-4,msp,all,99.371,-0.0374,14.3516,2.7327,8,0.0645
+mobilenet_v2,ptq_int8 vs fp32,msp,clean,99.3443,-0.1479,14.9518,1.8647,6,0.375
+mobilenet_v2,qat_int8_lr1e-4 vs fp32_ft_lr1e-4,msp,clean,99.3445,-0.0397,14.8359,2.7496,7,0.084
 mobilenet_v3_large,ptq_int8 vs fp32,energy,all,99.1882,-0.7932,12.7277,7.4294,10,0.002
 mobilenet_v3_large,qat_int8_lr1e-4 vs fp32_ft_lr1e-4,energy,all,99.1962,-0.0367,11.1101,5.076,10,0.002
 mobilenet_v3_large,ptq_int8 vs fp32,energy,clean,99.1548,-0.8283,12.4094,7.589,10,0.002

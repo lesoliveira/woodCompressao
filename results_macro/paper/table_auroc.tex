@@ -17,6 +17,11 @@ ResNet-18 & FP32 & 42.7 & 99.26$\pm$0.45 & 96.40$\pm$1.41 & 96.13$\pm$1.42 & 96.
  & PTQ INT8 & 10.7 & 99.16$\pm$0.46 & 96.16$\pm$1.41$^{**}$ & 95.90$\pm$1.36$^{**}$ & 95.86$\pm$1.37$^{**}$ & 98.11$\pm$0.85 & 98.13$\pm$0.89 \\
  & FP32 + FT & 42.7 & 99.30$\pm$0.43 & 96.64$\pm$1.20 & 96.24$\pm$1.37 & 96.20$\pm$1.38 & 98.18$\pm$0.75 & 98.26$\pm$0.69 \\
  & QAT INT8 & 10.7 & 99.30$\pm$0.39 & 96.35$\pm$1.27 & 96.02$\pm$1.43 & 95.98$\pm$1.44 & 98.12$\pm$0.79 & 98.22$\pm$0.78 \\
+\midrule
+MobileNetV2 & FP32 & 8.8 & 99.37$\pm$0.28 & 96.19$\pm$1.46 & 95.07$\pm$1.75 & 94.99$\pm$1.77 & 98.26$\pm$0.95 & 98.22$\pm$0.88 \\
+ & PTQ INT8 & 2.3 & 99.23$\pm$0.28 & 95.99$\pm$1.23 & 94.86$\pm$1.54 & 94.77$\pm$1.55 & 98.22$\pm$0.87 & 98.15$\pm$0.93 \\
+ & FP32 + FT & 8.8 & 99.37$\pm$0.28 & 96.32$\pm$1.39 & 95.17$\pm$1.78 & 95.10$\pm$1.80 & 98.30$\pm$0.91 & 98.30$\pm$0.83 \\
+ & QAT INT8 & 2.3 & 99.33$\pm$0.36 & 95.91$\pm$1.49 & 94.86$\pm$1.59 & 94.78$\pm$1.61 & 98.18$\pm$0.85 & 98.21$\pm$0.95 \\
 \bottomrule
 \end{tabular}
 \\[2pt]\parbox{\linewidth}{\scriptsize Mean $\pm$ std over 10 seeds (random known/unknown species splits); higher is better. FP32 + FT: same fine-tuning as QAT without quantization. Paired Wilcoxon test against the uncompressed reference (PTQ vs.\ FP32, QAT vs.\ FP32 + FT): $^{*}p<0.05$, $^{**}p<0.01$.}
