@@ -69,6 +69,8 @@ def parse():
     ap.add_argument("--calib-images", type=int, default=100, help="imagens de treino para calibrar a PTQ")
     ap.add_argument("--qat-epochs", type=int, default=3)
     ap.add_argument("--qat-lr", type=float, default=1e-3)
+    ap.add_argument("--qat-per-channel", action="store_true",
+                    help="QAT com pesos por canal (use com --tag, ex.: --tag pc_lr1e-4)")
     # detectores e medicao
     ap.add_argument("--knn-k", type=int, default=5)
     ap.add_argument("--threads", type=int, default=4, help="threads de CPU na medida de latencia")
@@ -189,7 +191,7 @@ def main():
                     model = F.finetune_fp32(fp32, split, cache_map, args)
                 else:
                     F.set_seed(seed)
-                    model = F.qat_int8(fp32, split, cache_map, args, engine)
+                    model = F.qat_int8(fp32, split, cache_map, args, engine, per_channel=args.qat_per_channel)
                 rows = evaluate(model, name, split, cache_map, args, dict(ctx, variant=vname(v)))
                 append_rows(csv_path, rows)
                 best = max(rows, key=lambda r: r["auroc"])

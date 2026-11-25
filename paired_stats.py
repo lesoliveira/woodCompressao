@@ -31,6 +31,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--results", required=True)
     ap.add_argument("--pairs", nargs="*", default=None, help="pares A:B (padrao: os tres acima)")
+    ap.add_argument("--out-name", default="paired_stats.csv", help="nome do CSV de saida")
     args = ap.parse_args()
     pairs = [tuple(p.split(":")) for p in args.pairs] if args.pairs else PAIRS
 
@@ -62,7 +63,10 @@ def main():
                 rows.append(r)
 
     res = pd.DataFrame(rows)
-    out = Path(args.results).parent / "paired_stats.csv"
+    if res.empty:
+        print("[aviso] nenhum par com pelo menos 2 sementes em comum: nada a comparar")
+        return
+    out = Path(args.results).parent / args.out_name
     res.to_csv(out, index=False)
 
     pd.set_option("display.width", 250)

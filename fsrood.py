@@ -414,12 +414,18 @@ def _freeze_bn(m):
             mod.eval()
 
 
-def qat_int8(fp32_model, split, cache_map, args, engine):
+def qat_int8(fp32_model, split, cache_map, args, engine, per_channel=False):
+    """QAT a partir do FP32. per_channel=True troca o fake-quant dos pesos por um por canal
+    (no qnnpack, usado no Mac e no Raspberry Pi, o padrao e por tensor; no x86 ja e por canal)."""
     import torch.ao.nn.intrinsic.qat as nniqat
+    from torch.ao.quantization import QConfig, default_per_channel_weight_fake_quant
     m = copy.deepcopy(fp32_model).cpu()
     m.train()
     m.fuse_model(is_qat=True)
-    m.qconfig = get_default_qat_qconfig(engine)
+    qc = get_default_qat_qconfig(engine)
+    if per_channel:
+        qc = QConfig(activation=qc.activation, weight=default_per_channel_weight_fake_quant)
+    m.qconfig = qc
     prepare_qat(m, inplace=True)
     loader = _loader(split["train"], cache_map, args)
     opt = torch.optim.SGD(m.parameters(), lr=args.qat_lr, momentum=0.9, weight_decay=args.weight_decay)
