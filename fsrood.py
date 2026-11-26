@@ -275,7 +275,10 @@ def load_patches(path, max_patches=0):
 # Modelos (versoes quantizaveis do torchvision)
 # ---------------------------------------------------------------------------
 
-BACKBONES = ("mobilenet_v3_large", "mobilenet_v2", "resnet18")
+BACKBONES = ("mobilenet_v3_large", "mobilenet_v2", "resnet18", "efficientnet_lite0")
+# Modelos sem versao quantizavel no torchvision: quantizados pelo modo FX (rastreamento do grafo),
+# com os mesmos qconfigs (backend qnnpack no ARM) e kernels INT8 reais.
+FX_MODELS = ("efficientnet_lite0",)
 
 
 def build_model(name, n_classes, pretrained=True):
@@ -293,9 +296,42 @@ def build_model(name, n_classes, pretrained=True):
         w = M.ResNet18_Weights.IMAGENET1K_V1 if pretrained else None
         m = Q.resnet18(weights=w, quantize=False)
         m.fc = nn.Linear(m.fc.in_features, n_classes)
+    elif name == "efficientnet_lite0":
+        # EfficientNet-Lite0 (timm, pesos ImageNet "ra_in1k"): depthwise, sem SE nem swish.
+        # ReLU6 trocado por ReLU (ver _split_bn_act), como na MobileNetV2 quantizavel do torchvision.
+        import timm
+        m = timm.create_model("efficientnet_lite0.ra_in1k", pretrained=pretrained, num_classes=n_classes)
+        _split_bn_act(m)
     else:
         raise ValueError(f"backbone desconhecido: {name} (opcoes: {BACKBONES})")
     return m
+
+
+def _split_bn_act(model):
+    """O timm junta BN e ativacao num modulo proprio (BatchNormAct2d), que o modo FX nao funde com
+    a convolucao e deixa em FP32, com quantizacao e desquantizacao em volta de cada camada.
+    Troca cada um por nn.Sequential(BatchNorm2d, ativacao), com os mesmos parametros e estatisticas,
+    para que conv+BN sejam fundidas e a rede inteira rode em INT8. A saida do modelo nao muda."""
+    try:
+        from timm.layers import BatchNormAct2d
+    except ImportError:
+        return model
+    for parent in list(model.modules()):
+        for cname, child in list(parent.named_children()):
+            if isinstance(child, BatchNormAct2d):
+                bn = nn.BatchNorm2d(child.num_features, eps=child.eps, momentum=child.momentum,
+                                    affine=child.affine, track_running_stats=child.track_running_stats)
+                bn.load_state_dict({k: v for k, v in child.state_dict().items() if k in bn.state_dict()})
+                parts = [bn] + [mm for mm in (child.drop, child.act) if not isinstance(mm, nn.Identity)]
+                setattr(parent, cname, nn.Sequential(*parts))
+    # ReLU6 -> ReLU, como na MobileNetV2 quantizavel do torchvision: no qnnpack o ReLU6/Hardtanh
+    # quantizado depois da convolucao (sem fusao) gera erro grande; o ReLU e fundido com a conv.
+    # A troca e feita antes do ajuste fino, entao FP32 e INT8 usam a mesma rede.
+    for parent in list(model.modules()):
+        for cname, child in list(parent.named_children()):
+            if isinstance(child, nn.ReLU6):
+                setattr(parent, cname, nn.ReLU(inplace=True))
+    return model
 
 
 def head_of(model, name):
@@ -381,10 +417,36 @@ from torch.ao.quantization import (convert, get_default_qat_qconfig, get_default
 
 
 @torch.no_grad()
-def ptq_int8(fp32_model, calib_items, cache_map, args, engine):
+def _qconfig(engine, per_channel, qat=False):
+    """qconfig padrao do backend; per_channel=True troca so o observador/fake-quant dos pesos."""
+    from torch.ao.quantization import (QConfig, default_per_channel_weight_fake_quant,
+                                       default_per_channel_weight_observer)
+    qc = get_default_qat_qconfig(engine) if qat else get_default_qconfig(engine)
+    if per_channel:
+        w = default_per_channel_weight_fake_quant if qat else default_per_channel_weight_observer
+        qc = QConfig(activation=qc.activation, weight=w)
+    return qc
+
+
+def _example_input(calib_items, cache_map, args):
+    p = calib_items[0][0]
+    return (load_patches(cache_map[p], args.max_patches),)
+
+
+@torch.no_grad()
+def ptq_int8(fp32_model, calib_items, cache_map, args, engine, name=None, per_channel=False):
+    """PTQ INT8. No qnnpack o padrao quantiza os pesos por tensor; per_channel=True usa por canal."""
     m = copy.deepcopy(fp32_model).cpu().eval()
+    qc = _qconfig(engine, per_channel)
+    if name in FX_MODELS:
+        from torch.ao.quantization import QConfigMapping
+        from torch.ao.quantization.quantize_fx import convert_fx, prepare_fx
+        m = prepare_fx(m, QConfigMapping().set_global(qc), _example_input(calib_items, cache_map, args))
+        for p, _ in calib_items:
+            m(load_patches(cache_map[p], args.max_patches))
+        return convert_fx(m).eval()
     m.fuse_model(is_qat=False)
-    m.qconfig = get_default_qconfig(engine)
+    m.qconfig = qc
     prepare(m, inplace=True)
     for p, _ in calib_items:
         m(load_patches(cache_map[p], args.max_patches))
@@ -414,19 +476,22 @@ def _freeze_bn(m):
             mod.eval()
 
 
-def qat_int8(fp32_model, split, cache_map, args, engine, per_channel=False):
+def qat_int8(fp32_model, split, cache_map, args, engine, per_channel=False, name=None):
     """QAT a partir do FP32. per_channel=True troca o fake-quant dos pesos por um por canal
     (no qnnpack, usado no Mac e no Raspberry Pi, o padrao e por tensor; no x86 ja e por canal)."""
     import torch.ao.nn.intrinsic.qat as nniqat
-    from torch.ao.quantization import QConfig, default_per_channel_weight_fake_quant
     m = copy.deepcopy(fp32_model).cpu()
     m.train()
-    m.fuse_model(is_qat=True)
-    qc = get_default_qat_qconfig(engine)
-    if per_channel:
-        qc = QConfig(activation=qc.activation, weight=default_per_channel_weight_fake_quant)
-    m.qconfig = qc
-    prepare_qat(m, inplace=True)
+    qc = _qconfig(engine, per_channel, qat=True)
+    fx = name in FX_MODELS
+    if fx:
+        from torch.ao.quantization import QConfigMapping
+        from torch.ao.quantization.quantize_fx import prepare_qat_fx
+        m = prepare_qat_fx(m, QConfigMapping().set_global(qc), _example_input(split["train"], cache_map, args))
+    else:
+        m.fuse_model(is_qat=True)
+        m.qconfig = qc
+        prepare_qat(m, inplace=True)
     loader = _loader(split["train"], cache_map, args)
     opt = torch.optim.SGD(m.parameters(), lr=args.qat_lr, momentum=0.9, weight_decay=args.weight_decay)
     for ep in range(args.qat_epochs):
@@ -438,6 +503,9 @@ def qat_int8(fp32_model, split, cache_map, args, engine, per_channel=False):
         loss = _one_epoch(m, loader, opt, torch.device("cpu"))
         print(f"  [qat] epoca {ep + 1}/{args.qat_epochs} loss={loss:.4f} ({time.time() - t0:.0f}s)")
     m.eval()
+    if fx:
+        from torch.ao.quantization.quantize_fx import convert_fx
+        return convert_fx(m).eval()
     return convert(m, inplace=False).eval()
 
 

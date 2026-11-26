@@ -61,7 +61,7 @@ def main():
         leak = np.array([grp(p) in train_groups for p, _ in split["test_known"]])
         for f in sorted((res / "scores").glob(f"{dname}_s{seed}_*.npz")):
             rest = f.stem[len(f"{dname}_s{seed}_"):]
-            bb = next((b for b in ("mobilenet_v3_large", "mobilenet_v2", "resnet18") if rest.startswith(b)), None)
+            bb = next((b for b in ("mobilenet_v3_large", "mobilenet_v2", "resnet18", "efficientnet_lite0") if rest.startswith(b)), None)
             if bb is None:
                 continue
             v = rest[len(bb) + 1:]

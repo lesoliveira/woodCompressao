@@ -229,6 +229,10 @@ def main():
             if not ckpt.exists():
                 print(f"[skip] sem checkpoint {ckpt.name} (rode o Experimento 1 antes)")
                 continue
+            if name in F.FX_MODELS:
+                print(f"[skip] {name}: ablacao so para modelos quantizaveis do torchvision "
+                      f"(use a variante ptq_int8_pc do run_exp1.py)")
+                continue
             fp32 = F.build_model(name, nk, pretrained=False)
             fp32.load_state_dict(torch.load(ckpt, map_location="cpu"))
             fp32.eval()

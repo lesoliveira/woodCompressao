@@ -44,8 +44,9 @@ def parse():
     ap.add_argument("--backbones", nargs="+", default=["mobilenet_v3_large", "resnet18"],
                     choices=F.BACKBONES)
     ap.add_argument("--variants", nargs="+", default=["fp32", "ptq_int8", "qat_int8"],
-                    choices=["fp32", "ptq_int8", "qat_int8", "fp32_ft"],
-                    help="fp32_ft = controle da QAT: mesmo ajuste fino, sem quantizacao")
+                    choices=["fp32", "ptq_int8", "ptq_int8_pc", "qat_int8", "fp32_ft"],
+                    help="ptq_int8_pc = PTQ com pesos por canal; fp32_ft = controle da QAT: mesmo ajuste "
+                         "fino, sem quantizacao")
     ap.add_argument("--tag", default="",
                     help="sufixo no nome das variantes fp32_ft e qat_int8 no CSV (ex.: lr1e-4)")
     ap.add_argument("--seeds", nargs="+", type=int, default=[0, 1, 2, 3, 4])
@@ -184,14 +185,16 @@ def main():
                 t0 = time.time()
                 if v == "fp32":
                     model = fp32
-                elif v == "ptq_int8":
-                    model = F.ptq_int8(fp32, calib, cache_map, args, engine)
+                elif v in ("ptq_int8", "ptq_int8_pc"):
+                    model = F.ptq_int8(fp32, calib, cache_map, args, engine, name=name,
+                                       per_channel=(v == "ptq_int8_pc"))
                 elif v == "fp32_ft":
                     F.set_seed(seed)
                     model = F.finetune_fp32(fp32, split, cache_map, args)
                 else:
                     F.set_seed(seed)
-                    model = F.qat_int8(fp32, split, cache_map, args, engine, per_channel=args.qat_per_channel)
+                    model = F.qat_int8(fp32, split, cache_map, args, engine, per_channel=args.qat_per_channel,
+                                       name=name)
                 rows = evaluate(model, name, split, cache_map, args, dict(ctx, variant=vname(v)))
                 append_rows(csv_path, rows)
                 best = max(rows, key=lambda r: r["auroc"])

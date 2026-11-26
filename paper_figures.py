@@ -33,7 +33,8 @@ from scipy import stats
 DETS = ["msp", "maxlogit", "energy", "knn", "mahalanobis"]
 DET_LABEL = {"msp": "MSP", "maxlogit": "MaxLogit", "energy": "Energy", "knn": "kNN", "mahalanobis": "Mahal."}
 FAMILY = {"msp": "logit", "maxlogit": "logit", "energy": "logit", "knn": "feature", "mahalanobis": "feature"}
-BB_LABEL = {"mobilenet_v3_large": "MobileNetV3-L", "resnet18": "ResNet-18", "mobilenet_v2": "MobileNetV2"}
+BB_LABEL = {"mobilenet_v3_large": "MobileNetV3-L", "resnet18": "ResNet-18", "mobilenet_v2": "MobileNetV2",
+            "efficientnet_lite0": "EfficientNet-Lite0"}
 VAR_LABEL = {"fp32": "FP32", "ptq_int8": "PTQ INT8", "fp32_ft_lr1e-4": "FP32 + FT", "qat_int8_lr1e-4": "QAT INT8"}
 PAIRS = [("ptq_int8", "fp32", "PTQ vs. FP32"), ("qat_int8_lr1e-4", "fp32_ft_lr1e-4", "QAT vs. FT control")]
 # paleta categorica validada (scripts/validate_palette.js do skill dataviz): azul, laranja
