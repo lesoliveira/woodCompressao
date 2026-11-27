@@ -166,7 +166,9 @@ The study has limitations. The datasets were acquired in the laboratory, and fie
 
 \section{Conclusion}
 
-INT8 quantization with per-tensor weights, the default PyTorch configuration for ARM, increases the rate of unknown wood species accepted as known by up to 7.4\,pp in MobileNetV3 and 28.7\,pp in EfficientNet-Lite0, while closed-set accuracy often changes by less than one point. The cause is the coarse quantization of depthwise filters. Quantizing weights per channel and using a feature-based detector restores open-world reliability at negligible cost. For field tools that must say ``I do not know this species'', we recommend validating compressed models with open-set metrics as a matter of course.
+A quantized model that keeps its accuracy is not necessarily a model that still knows what it does not know. With the default PyTorch configuration for ARM, INT8 quantization made every depthwise-separable backbone we tested accept more unknown wood species as known, consistently over two datasets and ten splits: up to 7.4\,pp more for MobileNetV3 and 28.7\,pp more for EfficientNet-Lite0 at 95\% TPR, and up to 15.6\,pp more for MobileNetV3 at the stricter operating points a field tool would use. Accuracy, and even AUROC, often barely register this loss, so a standard validation pipeline would approve most of these models. The cause is clear, the per-tensor quantization of depthwise filters, and so is the remedy. Per-channel weights remove most of the damage at a cost of less than 0.4\,MB and no measurable latency, and quantization-aware training adds nothing beyond them.
+
+We therefore make three recommendations for open-world models deployed on edge devices. First, quantize weights per channel. Second, prefer feature-based detectors, which degrade less. Third, never accept a compressed model on accuracy alone: measure the rate of accepted unknowns at the operating point that will be used in the field. For a tool whose most important answer is ``I do not know this species'', that answer must be tested after compression, not assumed.
 
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
