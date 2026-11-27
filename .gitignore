@@ -15,3 +15,12 @@ __pycache__/
 *.pyc
 .venv/
 .DS_Store
+
+# LaTeX
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.out
+paper/*.log

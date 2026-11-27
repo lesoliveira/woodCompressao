@@ -1,0 +1,26 @@
+\begin{table}[t]
+\centering
+\caption{PTQ ablation on MobileNetV3-L: paired differences to FP32 (pp, 10 seeds). \emph{Weights only}: weights quantized to INT8, activations kept in FP32.}
+\label{tab:ablation}
+\setlength{\tabcolsep}{2.6pt}
+\footnotesize
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{l ccc ccc}
+\toprule
+ & \multicolumn{3}{c}{Macro} & \multicolumn{3}{c}{Micro} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+PTQ configuration & $\Delta$Acc. & \multicolumn{2}{c}{$\Delta$FPR@95} & $\Delta$Acc. & \multicolumn{2}{c}{$\Delta$FPR@95} \\
+ & & Energy & kNN & & Energy & kNN \\
+\midrule
+Default (per-tensor weights) & -0.79$^{\dagger}$ & +7.4$^{\ddagger}$ & +2.8$^{\ddagger}$ & -0.32 & +7.4$^{\ddagger}$ & +4.8$^{\ddagger}$ \\
+Per-channel weights & +0.04 & +2.0$^{\ddagger}$ & +0.1 & +0.09 & +1.3$^{\ddagger}$ & -0.5 \\
+Weights only, per-tensor & -0.60$^{\ddagger}$ & +5.9$^{\ddagger}$ & +3.2$^{\ddagger}$ & -0.18 & +5.4$^{\ddagger}$ & +3.7$^{\dagger}$ \\
+Weights only, per-channel & +0.11 & +0.3 & -0.4 & +0.05 & +0.7$^{\dagger}$ & +0.9 \\
+Last linear layer in FP32 & -0.83$^{\dagger}$ & +7.4$^{\ddagger}$ & +2.8$^{\ddagger}$ & -0.32 & +7.3$^{\ddagger}$ & +4.8$^{\ddagger}$ \\
+Last 3 blocks + classifier in FP32 & -0.68$^{\dagger}$ & +7.2$^{\ddagger}$ & +2.6$^{\ddagger}$ & -0.27 & +6.9$^{\ddagger}$ & +5.3$^{\ddagger}$ \\
+Calibration with 25 images & -0.50$^{\dagger}$ & +6.9$^{\ddagger}$ & +3.1$^{\dagger}$ & -0.41 & +9.2$^{\ddagger}$ & +4.1$^{\dagger}$ \\
+Calibration with 400 images & -0.62$^{\dagger}$ & +7.1$^{\ddagger}$ & +2.9$^{\ddagger}$ & -0.09 & +7.2$^{\ddagger}$ & +4.1$^{\dagger}$ \\
+MinMax activation observer & -2.78$^{\ddagger}$ & +39.8$^{\ddagger}$ & +8.6$^{\ddagger}$ & -10.99$^{\ddagger}$ & +28.3$^{\ddagger}$ & +16.4$^{\ddagger}$ \\
+\bottomrule
+\end{tabular}}
+\end{table}

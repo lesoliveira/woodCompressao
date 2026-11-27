@@ -1,0 +1,19 @@
+\begin{table}[t]
+\centering
+\caption{INT8 weight quantization error (BN folded), mean over layers, checkpoints and datasets. Spread: largest over median per-channel weight range. Dead: channels (non-zero in FP32) whose weights all round to zero with a per-tensor scale. Last column: $\Delta$FPR@95 (Energy) of default PTQ, macro/micro.}
+\label{tab:weights}
+\setlength{\tabcolsep}{2.6pt}
+\footnotesize
+\begin{tabular}{l cccc c c}
+\toprule
+ & \multicolumn{4}{c}{Depthwise layers} & All & \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-6}
+Backbone & Spread & Err.\ PT & Err.\ PC & Dead & Err.\ PT & $\Delta$FPR@95 \\
+\midrule
+MobileNetV3-L & 4.6$\times$ & 2.0\% & 0.6\% & 0.1\% & 2.3\% & +7.4/+7.4 \\
+MobileNetV2 & 4.3$\times$ & 1.8\% & 0.4\% & 0.9\% & 1.5\% & +2.2/+2.8 \\
+EfficientNet-Lite0 & 5.8$\times$ & 3.3\% & 0.6\% & 2.8\% & 2.6\% & +28.7/+12.1 \\
+ResNet-18 & -- & -- & -- & -- & 3.4\% & +0.8/-0.1 \\
+\bottomrule
+\end{tabular}
+\end{table}
