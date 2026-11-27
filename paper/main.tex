@@ -86,7 +86,7 @@ All models are quantized with PyTorch~\cite{paszke2019pytorch} (eager mode for t
 
 We use five post-hoc scores: MSP~\cite{hendrycks2017baseline}, MaxLogit~\cite{hendrycks2022scaling} and Energy~\cite{liu2020energy} (logit-based), and kNN ($k=5$, cosine)~\cite{sun2022knn} and Mahalanobis with a shared Ledoit-Wolf covariance~\cite{lee2018simple,ledoit2004well} on the penultimate features (feature-based). Feature-based detectors are fit on the training features of the model being evaluated, FP32 or INT8.
 
-We report closed-set accuracy on known species and FPR@95, the fraction of unknown images accepted when the threshold accepts 95\% of the known ones. FPR@95 is the operational quantity of interest: the rate of unknown species that would be accepted as known. Differences between a model and its reference are computed per seed, and their significance is assessed with a paired Wilcoxon signed-rank test~\cite{wilcoxon1945individual} over the ten seeds. Latency is the median time per image (12 patches) with four threads on an Apple M CPU.
+We report closed-set accuracy on known species and FPR@95, the fraction of unknown images accepted when the threshold accepts 95\% of the known ones. FPR@95 is the operational quantity of interest: the rate of unknown species that would be accepted as known. Differences between a model and its reference are computed per seed, and their significance is assessed with a paired Wilcoxon signed-rank test~\cite{wilcoxon1945individual} over the ten seeds. Latency is the median time per image (12 patches) with four threads on an Apple M CPU. Tables report Energy and kNN as representatives of the logit-based and feature-based families. Results for all five detectors are shown in Fig.~\ref{fig:deltas} and are available in the repository.
 
 \section{Results}
 
@@ -114,7 +114,7 @@ The choice of FPR@95 does not drive these conclusions. Fig.~\ref{fig:tpr} repeat
 \label{fig:tpr}
 \end{figure}
 
-Logit-based detectors suffer the most. Feature-based detectors also degrade under default PTQ, by up to 12.0\,pp for kNN, but always less than Energy in the depthwise backbones.
+Logit-based detectors suffer the most. Feature-based detectors also degrade under default PTQ, by up to 12.0\,pp for kNN and 15.2\,pp for Mahalanobis, but always less than Energy in the depthwise backbones.
 
 \subsection{The cause is per-tensor weight quantization}
 
