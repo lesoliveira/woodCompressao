@@ -8,9 +8,9 @@ por tensor, todos os canais dividem uma unica escala, dada pelo canal de maior a
 canais de pesos pequenos ficam com poucos niveis, ou todos zerados.
 
 Por camada (conv e linear):
-  spread          max_c(amax_c) / mediana_c(amax_c), amax_c = max |w| do canal c
+  spread          max_c(amax_c) / mediana_c(amax_c), amax_c = max |w| do canal c (so canais vivos)
   err_pt, err_pc  erro relativo ||Q(W) - W|| / ||W|| com INT8 simetrico por tensor e por canal
-  dead_frac       fracao de canais com todos os pesos arredondados para zero (por tensor)
+  dead_frac       fracao dos canais vivos no FP32 cujos pesos viram todos zero (por tensor)
   depthwise       camada depthwise (groups == canais de saida > 1)
 
 Resumo por modelo: medias sobre as camadas (todas e so as depthwise). Com --stats, cruza o
@@ -62,7 +62,11 @@ def layer_stats(model):
         s_pt = amax.max() / 127
         s_pc = (amax / 127).view(-1, *([1] * (w.dim() - 1)))
         wq_pt, wq_pc = q_sym(w, s_pt), q_sym(w, s_pc)
-        dead = (wq_pt.flatten(1).abs().amax(1) == 0).float().mean()
+        # canais vivos no FP32 (amplitude > 1e-6 do maior) que viram zero com escala por tensor;
+        # canais ja ~nulos no FP32 (comuns na MobileNetV3) nao contam
+        alive = amax > 1e-6 * amax.max()
+        dead = ((wq_pt.flatten(1).abs().amax(1) == 0) & alive).float().sum() / alive.float().sum().clamp(min=1)
+        amax = amax[alive] if alive.any() else amax
         rows.append(dict(layer=lname, kind=type(mod).__name__, out_ch=w.shape[0],
                          depthwise=bool(isinstance(mod, nn.Conv2d) and mod.groups > 1 and mod.groups == w.shape[0]),
                          spread=float(amax.max() / amax.median()),
