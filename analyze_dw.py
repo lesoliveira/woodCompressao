@@ -20,7 +20,16 @@ CONFIGS = [  # (variante, descricao)
     ("abl_w_only_pt", "so pesos, por tensor em tudo"),
     ("abl_w_only_dw", "so pesos, por tensor so nas depthwise"),
     ("abl_w_only_nodw", "so pesos, por tensor menos nas depthwise"),
+    ("abl_w_only_stem", "so pesos, por tensor so na conv de entrada"),
+    ("abl_w_only_pw", "so pesos, por tensor so nas pointwise 1x1"),
+    ("abl_w_only_se", "so pesos, por tensor so no squeeze-excitation"),
+    ("abl_w_only_head", "so pesos, por tensor so na ultima conv e no classificador"),
+    ("abl_w_only_none", "nenhum peso quantizado (FP32 no dispositivo dos so-pesos)"),
 ]
+# configuracoes de pesos simulados novas: comparadas com a abl_w_only_none (mesmo dispositivo de
+# avaliacao). As demais (INT8 e w_only_pt da ablacao original) com o FP32 do Experimento 1 (CPU).
+SAME_DEVICE_REF = {"abl_w_only_dw", "abl_w_only_nodw", "abl_w_only_stem", "abl_w_only_pw",
+                   "abl_w_only_se", "abl_w_only_head"}
 NETS = ["mobilenet_v3_large", "mobilenet_v2"]
 DETS = ["msp", "maxlogit", "energy", "knn", "mahalanobis"]
 
@@ -39,6 +48,12 @@ def main():
                     if q.empty:
                         continue
                     f = ref.loc[(bb, d)]
+                    refname = "fp32"
+                    if v in SAME_DEVICE_REF:
+                        nn_ = a[(a.backbone == bb) & (a.detector == d) & (a.variant == "abl_w_only_none")]
+                        if not nn_.empty:
+                            f = nn_.set_index("seed")
+                            refname = "w_only_none"
                     s = sorted(set(q.index) & set(f.index))
                     dfpr = ((q.loc[s, "fpr95"] - f.loc[s, "fpr95"]) * 100).round(6).to_numpy()
                     dacc = ((q.loc[s, "acc"] - f.loc[s, "acc"]) * 100).to_numpy()
@@ -47,6 +62,7 @@ def main():
                     if v == "abl_base":
                         base = m
                     rows.append(dict(dataset=ds, backbone=bb, detector=d, variant=v, config=desc, n=len(s),
+                                     reference=refname,
                                      d_fpr95=round(m, 2), p=float(p), d_acc=round(float(dacc.mean()), 2),
                                      share_of_base=round(m / base, 2) if base and abs(base) > 0.5 else np.nan))
     out = Path("results_dw")

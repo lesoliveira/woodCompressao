@@ -28,6 +28,14 @@ Isolamento das camadas depthwise (convolucoes com groups == canais de entrada):
   dw_pt        INT8 completo: por tensor so nas depthwise, por canal no resto
   dw_pc        INT8 completo: por canal so nas depthwise, por tensor no resto (padrao)
 
+Sensibilidade por tipo de camada (so os pesos daquele tipo, por tensor, o resto em FP32):
+  w_only_stem  convolucao 3x3 de entrada
+  w_only_pw    convolucoes pointwise 1x1 de expansao e de projecao dos blocos
+  w_only_se    convolucoes 1x1 do squeeze-and-excitation (so MobileNetV3)
+  w_only_head  ultima convolucao 1x1 e camadas lineares do classificador
+  w_only_none  nenhum peso quantizado: o FP32 avaliado no mesmo dispositivo (referencia para --fp32-device)
+  (as depthwise sao a w_only_dw acima)
+
 Tambem mede, com --layer-error, o erro relativo de quantizacao bloco a bloco
 (||INT8 - FP32|| / ||FP32||) em imagens conhecidas e desconhecidas: layer_error.csv.
 
@@ -54,8 +62,11 @@ import run_exp1 as R
 
 CONFIGS = ["base", "pc", "minmax", "pc_minmax", "w_only_pt", "w_only_pc", "fc32", "cls32",
            "last1", "last3", "pc_fc32", "cal25", "cal400",
-           "w_only_dw", "w_only_nodw", "dw_pt", "dw_pc"]
+           "w_only_dw", "w_only_nodw", "dw_pt", "dw_pc",
+           "w_only_stem", "w_only_pw", "w_only_se", "w_only_head", "w_only_none"]
 DW_CONFIGS = ["w_only_dw", "w_only_nodw", "dw_pt", "dw_pc"]
+TYPE_CONFIGS = ["w_only_dw", "w_only_nodw", "w_only_stem", "w_only_pw", "w_only_se", "w_only_head"]
+FP32_CONFIGS = TYPE_CONFIGS + ["w_only_pt", "w_only_pc", "w_only_none"]   # modelos FP32 (pesos simulados)
 
 
 def parse():
@@ -76,6 +87,9 @@ def parse():
     ap.add_argument("--calib-images", type=int, default=100)
     ap.add_argument("--knn-k", type=int, default=5)
     ap.add_argument("--threads", type=int, default=4)
+    ap.add_argument("--fp32-device", default="cpu",
+                    help="dispositivo para as configuracoes so de pesos (modelos FP32): cpu, mps ou auto. "
+                         "Fora da CPU a latencia nao e medida. Compare sempre com a w_only_none do mesmo dispositivo.")
     ap.add_argument("--save-scores", action="store_true")
     ap.add_argument("--save-feats", action="store_true")
     ap.add_argument("--layer-error", action="store_true", help="mede o erro bloco a bloco (base e pc)")
@@ -134,15 +148,35 @@ def is_depthwise(mod):
     return isinstance(mod, nn.Conv2d) and mod.groups > 1 and mod.groups == mod.in_channels
 
 
+def layer_type(qname, mod, n_features):
+    """Tipo de uma camada com pesos das MobileNets: stem, dw, se, head ou pw."""
+    if isinstance(mod, nn.Linear):
+        return "head"
+    if mod.in_channels == 3:
+        return "stem"
+    if is_depthwise(mod):
+        return "dw"
+    if ".fc1" in qname or ".fc2" in qname:
+        return "se"
+    if qname.startswith(f"features.{n_features - 1}."):
+        return "head"
+    return "pw"
+
+
 @torch.no_grad()
 def _fake_quant_weights(model, per_channel, only=None):
     """Quantiza e desquantiza so os pesos (INT8 simetrico), mantendo ativacoes em FP32.
-    only: None (todas as camadas), "dw" (so depthwise) ou "nodw" (todas menos as depthwise)."""
-    for mod in model.modules():
+    only: None (todas as camadas), "nodw" (todas menos as depthwise) ou um tipo de layer_type
+    ("dw", "stem", "pw", "se", "head")."""
+    nf = len(model.features) if hasattr(model, "features") else 0
+    for qname, mod in model.named_modules():
         w = getattr(mod, "weight", None)
         if not isinstance(mod, (nn.Conv2d, nn.Linear)) or w is None:
             continue
-        if (only == "dw" and not is_depthwise(mod)) or (only == "nodw" and is_depthwise(mod)):
+        if only == "nodw":
+            if is_depthwise(mod):
+                continue
+        elif only is not None and layer_type(qname, mod, nf) != only:
             continue
         if per_channel:
             amax = w.abs().flatten(1).amax(1).clamp(min=1e-12)
@@ -156,7 +190,9 @@ def _fake_quant_weights(model, per_channel, only=None):
 def build_variant(fp32, name, cfg, calib, cache_map, args, engine):
     m = copy.deepcopy(fp32).cpu().eval()
     m.fuse_model(is_qat=False)
-    if cfg in ("w_only_dw", "w_only_nodw"):
+    if cfg == "w_only_none":
+        return m
+    if cfg in TYPE_CONFIGS:
         _fake_quant_weights(m, per_channel=False, only=cfg.split("_")[-1])
         return m
     if cfg.startswith("w_only"):
@@ -231,7 +267,13 @@ def main():
     F.raise_open_files_limit()
     out = Path(args.out)
     engine = F.pick_qengine(args.qengine)
-    print(f"[info] torch {torch.__version__} | engine INT8 = {engine}")
+    fp32_dev = args.fp32_device
+    if fp32_dev == "auto":
+        fp32_dev = "mps" if torch.backends.mps.is_available() else "cpu"
+    if fp32_dev == "mps" and not torch.backends.mps.is_available():
+        print("[aviso] mps indisponivel, usando cpu")
+        fp32_dev = "cpu"
+    print(f"[info] torch {torch.__version__} | engine INT8 = {engine} | modelos FP32 em {fp32_dev}")
     classes, samples = F.discover(args.data, args.layout, args.class_digits)
     cache_map = F.build_cache(samples, args.data, args.cache or Path(args.data).resolve().parent / "cache",
                               args.short_side)
@@ -273,7 +315,9 @@ def main():
                        n_test_known=len(split["test_known"]), n_test_unknown=len(split["test_unknown"]),
                        qengine=engine, torch=torch.__version__)
             for cfg in args.configs:
-                if cfg in ("cls32", "last1", "last3") and not name.startswith("mobilenet"):
+                if cfg in ("cls32", "last1", "last3") + tuple(TYPE_CONFIGS) and not name.startswith("mobilenet"):
+                    continue
+                if cfg == "w_only_se" and name != "mobilenet_v3_large":
                     continue
                 v = f"abl_{cfg}"
                 if (args.dataset_name, seed, name, v) in done:
@@ -282,11 +326,13 @@ def main():
                 calib = [split["train"][i] for i in perm[:min(n_cal, len(perm))]]
                 t0 = time.time()
                 qm = build_variant(fp32, name, cfg, calib, cache_map, args, engine)
-                rows = R.evaluate(qm, name, split, cache_map, args, dict(ctx, variant=v))
+                dev = fp32_dev if cfg in FP32_CONFIGS else "cpu"
+                rows = R.evaluate(qm, name, split, cache_map, args, dict(ctx, variant=v),
+                                  device=dev)
                 R.append_rows(csv_path, rows)
                 byd = {r["detector"]: r for r in rows}
                 print(f"[{v}] {name} s{seed}: acc={rows[0]['acc']:.4f} | FPR95 energy={byd['energy']['fpr95']:.3f} "
-                      f"knn={byd['knn']['fpr95']:.3f} | {rows[0]['size_mb']:.1f} MB | {time.time() - t0:.0f}s")
+                      f"knn={byd['knn']['fpr95']:.3f} | {rows[0]['size_mb']:.1f} MB | {dev} | {time.time() - t0:.0f}s")
 
                 if args.layer_error and cfg in ("base", "pc") and (args.dataset_name, seed, name, cfg) not in le_done:
                     n = args.layer_error_images

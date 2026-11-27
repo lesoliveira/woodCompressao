@@ -97,19 +97,23 @@ def append_rows(csv_path, rows):
         w.writerows(rows)
 
 
-def evaluate(model, name, split, cache_map, args, ctx):
-    """Avalia um modelo (FP32 ou INT8) em CPU e devolve as linhas do CSV."""
-    cpu = torch.device("cpu")
-    tr = F.infer(model, name, split["train"], cache_map, args, cpu)
-    tk = F.infer(model, name, split["test_known"], cache_map, args, cpu)
-    tu = F.infer(model, name, split["test_unknown"], cache_map, args, cpu)
+def evaluate(model, name, split, cache_map, args, ctx, device=None):
+    """Avalia um modelo (FP32 ou INT8) e devolve as linhas do CSV. Por padrao em CPU. Um modelo FP32
+    (por exemplo, com pesos quantizados de forma simulada) pode ser avaliado em outro dispositivo
+    (mps, cuda) para ganhar tempo. Nesse caso a latencia nao e medida (fica NaN)."""
+    dev = torch.device(device or "cpu")
+    model = model.to(dev)
+    tr = F.infer(model, name, split["train"], cache_map, args, dev)
+    tk = F.infer(model, name, split["test_known"], cache_map, args, dev)
+    tu = F.infer(model, name, split["test_unknown"], cache_map, args, dev)
+    model = model.cpu()
     fdet = F.FeatureDetectors(tr["feats"], tr["labels"], k=args.knn_k)
     sk, su = F.all_scores(tk, fdet), F.all_scores(tu, fdet)
     correct = tk["logits"].argmax(1) == tk["labels"]
     acc = float(correct.mean())
     e = F.ece(tk["logits"], tk["labels"])
     size = F.model_size_mb(model)
-    lat = F.latency_ms(model, split["test_known"], cache_map, args)
+    lat = F.latency_ms(model, split["test_known"], cache_map, args) if dev.type == "cpu" else float("nan")
     rows = []
     for d in F.DETECTORS:
         rows.append(dict(ctx, detector=d, acc=acc, auroc=F.auroc(sk[d], su[d]),
