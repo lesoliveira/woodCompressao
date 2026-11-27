@@ -1363,6 +1363,16 @@
   "auroc": -1.38,
   "n": 10
  },
+ "tpr/macro/mobilenet_v3_large/ptq_int8_pc/energy": {
+  "fpr80": 0.42,
+  "fpr85": 0.42,
+  "fpr90": 0.74,
+  "fpr95": 1.97,
+  "fpr98": 2.12,
+  "fpr99": 2.0,
+  "auroc": -0.25,
+  "n": 10
+ },
  "tpr/macro/mobilenet_v2/ptq_int8/energy": {
   "fpr80": 0.1,
   "fpr85": -0.13,
@@ -1371,6 +1381,16 @@
   "fpr98": 1.63,
   "fpr99": 0.36,
   "auroc": -0.22,
+  "n": 10
+ },
+ "tpr/macro/mobilenet_v2/ptq_int8_pc/energy": {
+  "fpr80": -0.08,
+  "fpr85": 0.18,
+  "fpr90": 0.03,
+  "fpr95": -0.26,
+  "fpr98": -0.32,
+  "fpr99": 0.25,
+  "auroc": -0.02,
   "n": 10
  },
  "tpr/macro/efficientnet_lite0/ptq_int8/energy": {
@@ -1403,6 +1423,16 @@
   "auroc": -0.24,
   "n": 10
  },
+ "tpr/macro/resnet18/ptq_int8_pc/energy": {
+  "fpr80": 0.03,
+  "fpr85": 0.2,
+  "fpr90": 0.12,
+  "fpr95": -0.14,
+  "fpr98": 0.48,
+  "fpr99": 0.35,
+  "auroc": -0.04,
+  "n": 10
+ },
  "tpr/micro/mobilenet_v3_large/ptq_int8/energy": {
   "fpr80": 2.82,
   "fpr85": 3.53,
@@ -1413,6 +1443,16 @@
   "auroc": -1.65,
   "n": 10
  },
+ "tpr/micro/mobilenet_v3_large/ptq_int8_pc/energy": {
+  "fpr80": 0.92,
+  "fpr85": 1.01,
+  "fpr90": 0.73,
+  "fpr95": 1.33,
+  "fpr98": 2.69,
+  "fpr99": 4.37,
+  "auroc": -0.5,
+  "n": 10
+ },
  "tpr/micro/mobilenet_v2/ptq_int8/energy": {
   "fpr80": 1.07,
   "fpr85": 1.32,
@@ -1421,6 +1461,16 @@
   "fpr98": 6.22,
   "fpr99": 8.45,
   "auroc": -0.83,
+  "n": 10
+ },
+ "tpr/micro/mobilenet_v2/ptq_int8_pc/energy": {
+  "fpr80": 0.21,
+  "fpr85": 0.38,
+  "fpr90": 0.56,
+  "fpr95": -0.21,
+  "fpr98": 2.1,
+  "fpr99": -0.73,
+  "auroc": -0.1,
   "n": 10
  },
  "tpr/micro/efficientnet_lite0/ptq_int8/energy": {
@@ -1451,6 +1501,16 @@
   "fpr98": 0.46,
   "fpr99": 2.25,
   "auroc": -0.14,
+  "n": 10
+ },
+ "tpr/micro/resnet18/ptq_int8_pc/energy": {
+  "fpr80": 0.12,
+  "fpr85": 0.09,
+  "fpr90": 0.01,
+  "fpr95": 0.17,
+  "fpr98": 0.5,
+  "fpr99": 1.23,
+  "auroc": -0.04,
   "n": 10
  },
  "mech/macro": [
