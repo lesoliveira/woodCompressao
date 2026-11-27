@@ -10,6 +10,8 @@ e results_weight_spread/weight_spread_models.csv. Escreve em paper/tables/ e pap
   tables/weights.tex     erro de quantizacao dos pesos por arquitetura
   tables/qat.tex         QAT por tensor e por canal contra o controle sem quantizacao
   figs/deltas.pdf        Delta FPR@95 por arquitetura e detector, por tensor x por canal
+  figs/tpr_sweep.pdf     Delta FPR em funcao do TPR (results_tpr_sweep/tpr_sweep.csv, de tpr_sweep.py)
+  figs/mechanism_scatter.pdf  escore FP32 x INT8 por imagem (precisa de results_macro/scores)
   numbers.json           numeros citados no texto
 
 Uso:  python make_paper_assets.py
@@ -254,6 +256,107 @@ def fig_deltas(df, path):
     plt.close(fig)
 
 
+def _style(plt):
+    plt.rcParams.update({"font.size": 7, "axes.spines.top": False, "axes.spines.right": False,
+                         "pdf.fonttype": 42, "savefig.bbox": "tight", "axes.edgecolor": "#8a8984",
+                         "axes.linewidth": 0.6})
+
+
+TPRS = [80, 85, 90, 95, 98, 99]
+# cor por rede (as cores laranja e azul da Fig. 1 ficam reservadas para por tensor e por canal).
+# ResNet-18 em cinza: e a referencia sem camadas depthwise. Identidade tambem pelo marcador.
+NET_STYLE = {"mobilenet_v3_large": ("#199e70", "o"), "mobilenet_v2": ("#c98500", "D"),
+             "efficientnet_lite0": ("#6250d6", "^"), "resnet18": ("#8a8984", "s")}
+
+
+def fig_tpr(path, nums, det="energy"):
+    """Delta FPR (INT8 - FP32) em funcao do TPR do ponto de operacao, media +- erro padrao."""
+    f = ROOT / "results_tpr_sweep" / "tpr_sweep.csv"
+    if not f.exists():
+        print(f"[aviso] {f} nao existe, figura do TPR nao gerada")
+        return
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    _style(plt)
+    t = pd.read_csv(f)
+    t = t[t.detector == det]
+    fig, axes = plt.subplots(1, 2, figsize=(3.5, 1.95), sharey=True)
+    x = np.arange(len(TPRS))
+    for ax, (ds, dsl) in zip(axes, DS):
+        for bb, bbl in ARCH:
+            col, mk = NET_STYLE[bb]
+            ref = t[(t.dataset == ds) & (t.backbone == bb) & (t.variant == "fp32")].set_index("seed")
+            for v, ls, mfc in (("ptq_int8", "-", col), ("ptq_int8_pc", "--", "white")):
+                q = t[(t.dataset == ds) & (t.backbone == bb) & (t.variant == v)].set_index("seed")
+                s = sorted(set(q.index) & set(ref.index))
+                if not s:
+                    continue
+                d = np.stack([(q.loc[s, f"fpr{p}"] - ref.loc[s, f"fpr{p}"]).to_numpy() * 100 for p in TPRS], 1)
+                m, se = d.mean(0), d.std(0, ddof=1) / np.sqrt(len(s))
+                ax.fill_between(x, m - se, m + se, color=col, alpha=0.15, lw=0)
+                ax.plot(x, m, ls=ls, color=col, lw=1.0 if v == "ptq_int8" else 0.9, marker=mk, ms=3,
+                        mfc=mfc, mec=col, mew=0.8)
+                a = (q.loc[s, "auroc"] - ref.loc[s, "auroc"]).to_numpy() * 100
+                nums[f"tpr/{ds}/{bb}/{v}/{det}"] = dict(zip([f"fpr{p}" for p in TPRS], m.round(2).tolist()),
+                                                        auroc=round(float(a.mean()), 2), n=len(s))
+        ax.axhline(0, color="#8a8984", lw=0.6)
+        ax.axvline(TPRS.index(95), color="#c3c2b7", lw=0.6, ls=":", zorder=0)
+        ax.set_xticks(x)
+        ax.set_xticklabels([str(p) for p in TPRS])
+        ax.set_xlabel("TPR of the operating point (%)")
+        ax.set_title(f"{dsl} dataset", loc="left", color="#2b2b2a")
+        ax.grid(axis="y", color="#e6e5e0", lw=0.5)
+        ax.set_axisbelow(True)
+    axes[0].set_ylabel(r"$\Delta$FPR (pp), Energy")
+    from matplotlib.lines import Line2D
+    h = [Line2D([], [], color=NET_STYLE[bb][0], marker=NET_STYLE[bb][1], ms=3, lw=1.0, label=bbl)
+         for bb, bbl in ARCH]
+    h += [Line2D([], [], color="#5f5e5a", lw=1.0, label="per-tensor (default)"),
+          Line2D([], [], color="#5f5e5a", lw=0.9, ls="--", marker="o", ms=3, mfc="white",
+                 label="per-channel")]
+    fig.legend(handles=h, loc="upper center", ncol=3, frameon=False, bbox_to_anchor=(0.53, 1.17),
+               fontsize=6, handlelength=2.2, columnspacing=1.0)
+    fig.tight_layout(w_pad=0.6)
+    fig.savefig(path)
+    fig.savefig(path.with_suffix(".png"), dpi=250)
+    plt.close(fig)
+
+
+def fig_mechanism_scatter(path, ds="macro", seed=0, bb="mobilenet_v3_large", det="energy"):
+    """Escore por imagem FP32 x PTQ INT8 (painel (a) da figura de mecanismo, em uma coluna)."""
+    sd = ROOT / f"results_{ds}" / "scores"
+    fa, fb = sd / f"{ds}_s{seed}_{bb}_fp32.npz", sd / f"{ds}_s{seed}_{bb}_ptq_int8.npz"
+    if not (fa.exists() and fb.exists()):
+        print(f"[aviso] escores de {bb} s{seed} nao encontrados, figura de mecanismo nao gerada")
+        return
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    _style(plt)
+    A, B = np.load(fa), np.load(fb)
+    ka, ua, kb, ub = A["known_" + det], A["unknown_" + det], B["known_" + det], B["unknown_" + det]
+    C_K, C_U, INK, MUTED = "#2a78d6", "#eb6834", "#2b2b2a", "#8a8984"
+    fig, ax = plt.subplots(figsize=(3.4, 2.45))
+    ax.scatter(ua, ub, s=5, color=C_U, alpha=0.35, linewidth=0, label="Unknown species")
+    ax.scatter(ka, kb, s=6, color=C_K, alpha=0.6, linewidth=0, label="Known species")
+    ta, tb = np.quantile(ka, 0.05), np.quantile(kb, 0.05)
+    ax.axvline(ta, color=INK, lw=0.7, ls="--")
+    ax.axhline(tb, color=INK, lw=0.7, ls="--")
+    lo, hi = min(ua.min(), ub.min()), max(ka.max(), kb.max())
+    ax.plot([lo, hi], [lo, hi], color=MUTED, lw=0.6)
+    newly = (ua < ta) & (ub >= tb)
+    ax.scatter(ua[newly], ub[newly], s=9, facecolor="none", edgecolor=INK, linewidth=0.6,
+               label=f"Newly accepted unknowns ({newly.mean() * 100:.1f}%)")
+    ax.set_xlabel(f"{DET_LABEL[det]} score, FP32")
+    ax.set_ylabel(f"{DET_LABEL[det]} score, PTQ INT8")
+    ax.legend(loc="upper left", frameon=False, markerscale=1.5, fontsize=6)
+    fig.tight_layout()
+    fig.savefig(path)
+    fig.savefig(path.with_suffix(".png"), dpi=250)
+    plt.close(fig)
+
+
 def main():
     (OUT / "tables").mkdir(parents=True, exist_ok=True)
     (OUT / "figs").mkdir(parents=True, exist_ok=True)
@@ -264,6 +367,8 @@ def main():
     (OUT / "tables" / "weights.tex").write_text(table_weights(nums))
     (OUT / "tables" / "qat.tex").write_text(table_qat(df, nums))
     fig_deltas(df, OUT / "figs" / "deltas.pdf")
+    fig_tpr(OUT / "figs" / "tpr_sweep.pdf", nums)
+    fig_mechanism_scatter(OUT / "figs" / "mechanism_scatter.pdf")
     for ds, _ in DS:   # mecanismo (escores) e erro por bloco, ja gerados pelos outros scripts
         for src, dst in ((f"results_{ds}/paper/fig_mechanism.pdf", f"mechanism_{ds}.pdf"),
                          (f"results_{ds}/fig_layer_error.pdf", f"layer_error_{ds}.pdf")):
