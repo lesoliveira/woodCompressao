@@ -22,6 +22,12 @@ Configuracoes (--configs, padrao: todas):
   cal25       base, calibracao com 25 imagens
   cal400      base, calibracao com 400 imagens
 
+Isolamento das camadas depthwise (convolucoes com groups == canais de entrada):
+  w_only_dw    so os pesos das depthwise quantizados (simulado, por tensor), o resto em FP32
+  w_only_nodw  os pesos de todas as camadas, MENOS as depthwise (simulado, por tensor)
+  dw_pt        INT8 completo: por tensor so nas depthwise, por canal no resto
+  dw_pc        INT8 completo: por canal so nas depthwise, por tensor no resto (padrao)
+
 Tambem mede, com --layer-error, o erro relativo de quantizacao bloco a bloco
 (||INT8 - FP32|| / ||FP32||) em imagens conhecidas e desconhecidas: layer_error.csv.
 
@@ -38,6 +44,7 @@ from pathlib import Path
 import numpy as np
 import torch
 import torch.nn as nn
+import torch.ao.nn.intrinsic as nni
 from torch.ao.quantization import (DeQuantStub, HistogramObserver, MinMaxObserver, QConfig, convert,
                                    default_per_channel_weight_observer, default_weight_observer,
                                    get_default_qconfig, prepare)
@@ -46,7 +53,9 @@ import fsrood as F
 import run_exp1 as R
 
 CONFIGS = ["base", "pc", "minmax", "pc_minmax", "w_only_pt", "w_only_pc", "fc32", "cls32",
-           "last1", "last3", "pc_fc32", "cal25", "cal400"]
+           "last1", "last3", "pc_fc32", "cal25", "cal400",
+           "w_only_dw", "w_only_nodw", "dw_pt", "dw_pc"]
+DW_CONFIGS = ["w_only_dw", "w_only_nodw", "dw_pt", "dw_pc"]
 
 
 def parse():
@@ -118,12 +127,22 @@ def _float_region(model, name, cfg):
         model.avgpool.qconfig = None
 
 
+def is_depthwise(mod):
+    """Convolucao depthwise: um filtro por canal de entrada (groups == in_channels > 1)."""
+    if isinstance(mod, nni._FusedModule):
+        mod = mod[0]
+    return isinstance(mod, nn.Conv2d) and mod.groups > 1 and mod.groups == mod.in_channels
+
+
 @torch.no_grad()
-def _fake_quant_weights(model, per_channel):
-    """Quantiza e desquantiza so os pesos (INT8 simetrico), mantendo ativacoes em FP32."""
+def _fake_quant_weights(model, per_channel, only=None):
+    """Quantiza e desquantiza so os pesos (INT8 simetrico), mantendo ativacoes em FP32.
+    only: None (todas as camadas), "dw" (so depthwise) ou "nodw" (todas menos as depthwise)."""
     for mod in model.modules():
         w = getattr(mod, "weight", None)
         if not isinstance(mod, (nn.Conv2d, nn.Linear)) or w is None:
+            continue
+        if (only == "dw" and not is_depthwise(mod)) or (only == "nodw" and is_depthwise(mod)):
             continue
         if per_channel:
             amax = w.abs().flatten(1).amax(1).clamp(min=1e-12)
@@ -137,10 +156,24 @@ def _fake_quant_weights(model, per_channel):
 def build_variant(fp32, name, cfg, calib, cache_map, args, engine):
     m = copy.deepcopy(fp32).cpu().eval()
     m.fuse_model(is_qat=False)
+    if cfg in ("w_only_dw", "w_only_nodw"):
+        _fake_quant_weights(m, per_channel=False, only=cfg.split("_")[-1])
+        return m
     if cfg.startswith("w_only"):
         _fake_quant_weights(m, per_channel=cfg.endswith("pc"))
         return m
-    m.qconfig = qconfig_for(cfg, engine)
+    if cfg in ("dw_pt", "dw_pc"):
+        # o qconfig do modulo (fundido ou nao) define o observador dos pesos daquela camada
+        rest, dw = ("pc", "base") if cfg == "dw_pt" else ("base", "pc")
+        m.qconfig = qconfig_for(rest, engine)
+        dwq = qconfig_for(dw, engine)
+        for mod in m.modules():
+            if is_depthwise(mod):
+                mod.qconfig = dwq
+                if isinstance(mod, nni._FusedModule):
+                    mod[0].qconfig = dwq
+    else:
+        m.qconfig = qconfig_for(cfg, engine)
     if cfg in ("fc32", "pc_fc32", "cls32", "last1", "last3"):
         _float_region(m, name, cfg)
     prepare(m, inplace=True)
