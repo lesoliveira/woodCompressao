@@ -123,11 +123,18 @@ def table_main(df, nums):
     return "\n".join(L)
 
 
+# (config, rotulo, referencia). As configuracoes so de pesos do Experimento 6 foram avaliadas na GPU
+# e sao comparadas com o FP32 avaliado na mesma GPU (abl_w_only_none).
 ABL = [("base", "Default (per-tensor weights)"), ("pc", "Per-channel weights"),
-       ("w_only_pt", "Weights only, per-tensor"), ("w_only_pc", "Weights only, per-channel"),
-       ("fc32", "Last linear layer in FP32"), ("last3", "Last 3 blocks + classifier in FP32"),
-       ("cal25", "Calibration with 25 images"), ("cal400", "Calibration with 400 images"),
+       ("dw_pc", "Per-channel weights in depthwise layers only"),
+       ("w_only_pt", "Weights only, per-tensor"),
+       ("w_only_dw", r"\quad depthwise layers only", "abl_w_only_none"),
+       ("w_only_nodw", r"\quad all but depthwise layers", "abl_w_only_none"),
+       ("w_only_stem", r"\quad stem convolution only", "abl_w_only_none"),
+       ("w_only_pc", "Weights only, per-channel"),
+       ("last3", "Last 3 blocks + classifier in FP32"),
        ("minmax", "MinMax activation observer")]
+# fc32, cal25 e cal400 sairam da tabela por espaco (nao mudam nada, ver results_ablation.csv)
 
 
 def table_ablation(df, nums, bb="mobilenet_v3_large"):
@@ -141,13 +148,14 @@ def table_ablation(df, nums, bb="mobilenet_v3_large"):
          r"PTQ configuration & $\Delta$Acc. & \multicolumn{2}{c}{$\Delta$FPR@95} & $\Delta$Acc. & "
          r"\multicolumn{2}{c}{$\Delta$FPR@95} \\",
          r" & & Energy & kNN & & Energy & kNN \\", r"\midrule"]
-    for cfg, lab in ABL:
+    for cfg, lab, *ref in ABL:
+        ref = ref[0] if ref else "fp32"
         v = "ptq_int8_pc" if cfg == "pc" else f"abl_{cfg}"
         cells = [lab]
         for ds, _ in DS:
-            ca, na = dcell(df, ds, bb, v, "fp32", "msp", "acc", "+.2f", -1)
-            ce, ne = dcell(df, ds, bb, v, "fp32", "energy", "fpr95")
-            ck, nk = dcell(df, ds, bb, v, "fp32", "knn", "fpr95")
+            ca, na = dcell(df, ds, bb, v, ref, "msp", "acc", "+.2f", -1)
+            ce, ne = dcell(df, ds, bb, v, ref, "energy", "fpr95")
+            ck, nk = dcell(df, ds, bb, v, ref, "knn", "fpr95")
             cells += [ca, ce, ck]
             nums[f"abl/{ds}/{bb}/{cfg}"] = dict(acc=na, energy=ne, knn=nk)
         L.append(" & ".join(cells) + r" \\")

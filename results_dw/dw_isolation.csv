@@ -1,0 +1,231 @@
+dataset,backbone,detector,variant,config,n,reference,d_fpr95,p,d_acc,share_of_base
+macro,mobilenet_v3_large,msp,abl_base,"INT8, por tensor em tudo (padrao)",10,fp32,9.05,0.00390625,-0.79,1.0
+macro,mobilenet_v3_large,msp,abl_dw_pt,"INT8, por tensor so nas depthwise",10,fp32,5.7,0.001953125,-0.21,0.63
+macro,mobilenet_v3_large,msp,abl_dw_pc,"INT8, por canal so nas depthwise",10,fp32,5.59,0.001953125,-0.4,0.62
+macro,mobilenet_v3_large,msp,abl_pc,"INT8, por canal em tudo",10,fp32,1.53,0.064453125,0.04,0.17
+macro,mobilenet_v3_large,msp,abl_w_only_pt,"so pesos, por tensor em tudo",10,fp32,6.83,0.005859375,-0.6,0.75
+macro,mobilenet_v3_large,msp,abl_w_only_dw,"so pesos, por tensor so nas depthwise",10,w_only_none,2.91,0.07421875,-0.14,0.32
+macro,mobilenet_v3_large,msp,abl_w_only_nodw,"so pesos, por tensor menos nas depthwise",10,w_only_none,3.38,0.013671875,-0.32,0.37
+macro,mobilenet_v3_large,msp,abl_w_only_stem,"so pesos, por tensor so na conv de entrada",10,w_only_none,2.31,0.064453125,-0.32,0.25
+macro,mobilenet_v3_large,msp,abl_w_only_pw,"so pesos, por tensor so nas pointwise 1x1",10,w_only_none,1.07,0.10546875,-0.07,0.12
+macro,mobilenet_v3_large,msp,abl_w_only_se,"so pesos, por tensor so no squeeze-excitation",10,w_only_none,-0.11,0.6875,0.0,-0.01
+macro,mobilenet_v3_large,msp,abl_w_only_head,"so pesos, por tensor so na ultima conv e no classificador",10,w_only_none,0.23,0.15625,0.04,0.03
+macro,mobilenet_v3_large,msp,abl_w_only_none,nenhum peso quantizado (FP32 no dispositivo dos so-pesos),10,fp32,0.0,1.0,0.0,0.0
+macro,mobilenet_v3_large,maxlogit,abl_base,"INT8, por tensor em tudo (padrao)",10,fp32,6.85,0.001953125,-0.79,1.0
+macro,mobilenet_v3_large,maxlogit,abl_dw_pt,"INT8, por tensor so nas depthwise",10,fp32,5.3,0.00390625,-0.21,0.77
+macro,mobilenet_v3_large,maxlogit,abl_dw_pc,"INT8, por canal so nas depthwise",10,fp32,4.55,0.00390625,-0.4,0.66
+macro,mobilenet_v3_large,maxlogit,abl_pc,"INT8, por canal em tudo",10,fp32,2.24,0.001953125,0.04,0.33
+macro,mobilenet_v3_large,maxlogit,abl_w_only_pt,"so pesos, por tensor em tudo",10,fp32,5.88,0.001953125,-0.6,0.86
+macro,mobilenet_v3_large,maxlogit,abl_w_only_dw,"so pesos, por tensor so nas depthwise",10,w_only_none,3.23,0.001953125,-0.14,0.47
+macro,mobilenet_v3_large,maxlogit,abl_w_only_nodw,"so pesos, por tensor menos nas depthwise",10,w_only_none,2.97,0.005859375,-0.32,0.43
+macro,mobilenet_v3_large,maxlogit,abl_w_only_stem,"so pesos, por tensor so na conv de entrada",10,w_only_none,1.74,0.013671875,-0.32,0.25
+macro,mobilenet_v3_large,maxlogit,abl_w_only_pw,"so pesos, por tensor so nas pointwise 1x1",10,w_only_none,1.47,0.037109375,-0.07,0.21
+macro,mobilenet_v3_large,maxlogit,abl_w_only_se,"so pesos, por tensor so no squeeze-excitation",10,w_only_none,0.15,0.76953125,0.0,0.02
+macro,mobilenet_v3_large,maxlogit,abl_w_only_head,"so pesos, por tensor so na ultima conv e no classificador",10,w_only_none,0.09,0.109375,0.04,0.01
+macro,mobilenet_v3_large,maxlogit,abl_w_only_none,nenhum peso quantizado (FP32 no dispositivo dos so-pesos),10,fp32,0.0,1.0,0.0,0.0
+macro,mobilenet_v3_large,energy,abl_base,"INT8, por tensor em tudo (padrao)",10,fp32,7.43,0.001953125,-0.79,1.0
+macro,mobilenet_v3_large,energy,abl_dw_pt,"INT8, por tensor so nas depthwise",10,fp32,5.2,0.00390625,-0.21,0.7
+macro,mobilenet_v3_large,energy,abl_dw_pc,"INT8, por canal so nas depthwise",10,fp32,4.21,0.00390625,-0.4,0.57
+macro,mobilenet_v3_large,energy,abl_pc,"INT8, por canal em tudo",10,fp32,1.97,0.005859375,0.04,0.27
+macro,mobilenet_v3_large,energy,abl_w_only_pt,"so pesos, por tensor em tudo",10,fp32,5.9,0.001953125,-0.6,0.79
+macro,mobilenet_v3_large,energy,abl_w_only_dw,"so pesos, por tensor so nas depthwise",10,w_only_none,3.09,0.005859375,-0.14,0.42
+macro,mobilenet_v3_large,energy,abl_w_only_nodw,"so pesos, por tensor menos nas depthwise",10,w_only_none,2.99,0.009765625,-0.32,0.4
+macro,mobilenet_v3_large,energy,abl_w_only_stem,"so pesos, por tensor so na conv de entrada",10,w_only_none,1.79,0.01953125,-0.32,0.24
+macro,mobilenet_v3_large,energy,abl_w_only_pw,"so pesos, por tensor so nas pointwise 1x1",10,w_only_none,1.32,0.130859375,-0.07,0.18
+macro,mobilenet_v3_large,energy,abl_w_only_se,"so pesos, por tensor so no squeeze-excitation",10,w_only_none,-0.02,0.845703125,0.0,-0.0
+macro,mobilenet_v3_large,energy,abl_w_only_head,"so pesos, por tensor so na ultima conv e no classificador",10,w_only_none,0.04,0.546875,0.04,0.01
+macro,mobilenet_v3_large,energy,abl_w_only_none,nenhum peso quantizado (FP32 no dispositivo dos so-pesos),10,fp32,0.0,1.0,0.0,0.0
+macro,mobilenet_v3_large,knn,abl_base,"INT8, por tensor em tudo (padrao)",10,fp32,2.81,0.001953125,-0.79,1.0
+macro,mobilenet_v3_large,knn,abl_dw_pt,"INT8, por tensor so nas depthwise",10,fp32,1.69,0.0078125,-0.21,0.6
+macro,mobilenet_v3_large,knn,abl_dw_pc,"INT8, por canal so nas depthwise",10,fp32,1.18,0.064453125,-0.4,0.42
+macro,mobilenet_v3_large,knn,abl_pc,"INT8, por canal em tudo",10,fp32,0.06,0.625,0.04,0.02
+macro,mobilenet_v3_large,knn,abl_w_only_pt,"so pesos, por tensor em tudo",10,fp32,3.23,0.00390625,-0.6,1.15
+macro,mobilenet_v3_large,knn,abl_w_only_dw,"so pesos, por tensor so nas depthwise",10,w_only_none,1.16,0.0078125,-0.14,0.41
+macro,mobilenet_v3_large,knn,abl_w_only_nodw,"so pesos, por tensor menos nas depthwise",10,w_only_none,1.36,0.064453125,-0.32,0.48
+macro,mobilenet_v3_large,knn,abl_w_only_stem,"so pesos, por tensor so na conv de entrada",10,w_only_none,1.08,0.037109375,-0.32,0.38
+macro,mobilenet_v3_large,knn,abl_w_only_pw,"so pesos, por tensor so nas pointwise 1x1",10,w_only_none,0.54,0.193359375,-0.07,0.19
+macro,mobilenet_v3_large,knn,abl_w_only_se,"so pesos, por tensor so no squeeze-excitation",10,w_only_none,0.05,0.3828125,0.0,0.02
+macro,mobilenet_v3_large,knn,abl_w_only_head,"so pesos, por tensor so na ultima conv e no classificador",10,w_only_none,-0.0,0.9375,0.04,-0.0
+macro,mobilenet_v3_large,knn,abl_w_only_none,nenhum peso quantizado (FP32 no dispositivo dos so-pesos),10,fp32,0.0,1.0,0.0,0.0
+macro,mobilenet_v3_large,mahalanobis,abl_base,"INT8, por tensor em tudo (padrao)",10,fp32,3.34,0.001953125,-0.79,1.0
+macro,mobilenet_v3_large,mahalanobis,abl_dw_pt,"INT8, por tensor so nas depthwise",10,fp32,3.34,0.001953125,-0.21,1.0
+macro,mobilenet_v3_large,mahalanobis,abl_dw_pc,"INT8, por canal so nas depthwise",10,fp32,1.28,0.009765625,-0.4,0.38
+macro,mobilenet_v3_large,mahalanobis,abl_pc,"INT8, por canal em tudo",10,fp32,1.1,0.0546875,0.04,0.33
+macro,mobilenet_v3_large,mahalanobis,abl_w_only_pt,"so pesos, por tensor em tudo",10,fp32,3.04,0.001953125,-0.6,0.91
+macro,mobilenet_v3_large,mahalanobis,abl_w_only_dw,"so pesos, por tensor so nas depthwise",10,w_only_none,1.94,0.01171875,-0.14,0.58
+macro,mobilenet_v3_large,mahalanobis,abl_w_only_nodw,"so pesos, por tensor menos nas depthwise",10,w_only_none,1.96,0.009765625,-0.32,0.59
+macro,mobilenet_v3_large,mahalanobis,abl_w_only_stem,"so pesos, por tensor so na conv de entrada",10,w_only_none,1.54,0.00390625,-0.32,0.46
+macro,mobilenet_v3_large,mahalanobis,abl_w_only_pw,"so pesos, por tensor so nas pointwise 1x1",10,w_only_none,1.24,0.12890625,-0.07,0.37
+macro,mobilenet_v3_large,mahalanobis,abl_w_only_se,"so pesos, por tensor so no squeeze-excitation",10,w_only_none,0.11,0.921875,0.0,0.03
+macro,mobilenet_v3_large,mahalanobis,abl_w_only_head,"so pesos, por tensor so na ultima conv e no classificador",10,w_only_none,-0.01,0.91015625,0.04,-0.0
+macro,mobilenet_v3_large,mahalanobis,abl_w_only_none,nenhum peso quantizado (FP32 no dispositivo dos so-pesos),10,fp32,0.0,1.0,0.0,0.0
+macro,mobilenet_v2,msp,abl_base,"INT8, por tensor em tudo (padrao)",10,fp32,1.83,0.431640625,-0.14,1.0
+macro,mobilenet_v2,msp,abl_dw_pt,"INT8, por tensor so nas depthwise",10,fp32,2.24,0.203125,-0.07,1.22
+macro,mobilenet_v2,msp,abl_dw_pc,"INT8, por canal so nas depthwise",10,fp32,0.09,0.845703125,-0.03,0.05
+macro,mobilenet_v2,msp,abl_pc,"INT8, por canal em tudo",10,fp32,0.21,0.556640625,-0.1,0.12
+macro,mobilenet_v2,msp,abl_w_only_pt,"so pesos, por tensor em tudo",10,fp32,2.84,0.375,-0.14,1.55
+macro,mobilenet_v2,msp,abl_w_only_dw,"so pesos, por tensor so nas depthwise",10,w_only_none,3.26,0.083984375,-0.07,1.78
+macro,mobilenet_v2,msp,abl_w_only_nodw,"so pesos, por tensor menos nas depthwise",10,w_only_none,-0.32,0.375,0.03,-0.18
+macro,mobilenet_v2,msp,abl_w_only_stem,"so pesos, por tensor so na conv de entrada",10,w_only_none,0.11,0.232421875,0.0,0.06
+macro,mobilenet_v2,msp,abl_w_only_pw,"so pesos, por tensor so nas pointwise 1x1",10,w_only_none,-0.34,0.431640625,0.03,-0.18
+macro,mobilenet_v2,msp,abl_w_only_head,"so pesos, por tensor so na ultima conv e no classificador",10,w_only_none,-0.0,1.0,0.0,-0.0
+macro,mobilenet_v2,msp,abl_w_only_none,nenhum peso quantizado (FP32 no dispositivo dos so-pesos),10,fp32,0.0,1.0,0.0,0.0
+macro,mobilenet_v2,maxlogit,abl_base,"INT8, por tensor em tudo (padrao)",10,fp32,2.0,0.064453125,-0.14,1.0
+macro,mobilenet_v2,maxlogit,abl_dw_pt,"INT8, por tensor so nas depthwise",10,fp32,2.73,0.16015625,-0.07,1.37
+macro,mobilenet_v2,maxlogit,abl_dw_pc,"INT8, por canal so nas depthwise",10,fp32,-0.4,0.375,-0.03,-0.2
+macro,mobilenet_v2,maxlogit,abl_pc,"INT8, por canal em tudo",10,fp32,-0.25,0.625,-0.1,-0.13
+macro,mobilenet_v2,maxlogit,abl_w_only_pt,"so pesos, por tensor em tudo",10,fp32,3.04,0.064453125,-0.14,1.52
+macro,mobilenet_v2,maxlogit,abl_w_only_dw,"so pesos, por tensor so nas depthwise",10,w_only_none,3.47,0.037109375,-0.07,1.74
+macro,mobilenet_v2,maxlogit,abl_w_only_nodw,"so pesos, por tensor menos nas depthwise",10,w_only_none,-0.38,0.845703125,0.03,-0.19
+macro,mobilenet_v2,maxlogit,abl_w_only_stem,"so pesos, por tensor so na conv de entrada",10,w_only_none,0.1,0.6953125,0.0,0.05
+macro,mobilenet_v2,maxlogit,abl_w_only_pw,"so pesos, por tensor so nas pointwise 1x1",10,w_only_none,-0.19,0.6953125,0.03,-0.09
+macro,mobilenet_v2,maxlogit,abl_w_only_head,"so pesos, por tensor so na ultima conv e no classificador",10,w_only_none,-0.03,0.15625,0.0,-0.01
+macro,mobilenet_v2,maxlogit,abl_w_only_none,nenhum peso quantizado (FP32 no dispositivo dos so-pesos),10,fp32,0.0,1.0,0.0,0.0
+macro,mobilenet_v2,energy,abl_base,"INT8, por tensor em tudo (padrao)",10,fp32,2.21,0.048828125,-0.14,1.0
+macro,mobilenet_v2,energy,abl_dw_pt,"INT8, por tensor so nas depthwise",10,fp32,2.84,0.130859375,-0.07,1.29
+macro,mobilenet_v2,energy,abl_dw_pc,"INT8, por canal so nas depthwise",10,fp32,-0.53,0.431640625,-0.03,-0.24
+macro,mobilenet_v2,energy,abl_pc,"INT8, por canal em tudo",10,fp32,-0.26,0.6953125,-0.1,-0.12
+macro,mobilenet_v2,energy,abl_w_only_pt,"so pesos, por tensor em tudo",10,fp32,2.93,0.083984375,-0.14,1.32
+macro,mobilenet_v2,energy,abl_w_only_dw,"so pesos, por tensor so nas depthwise",10,w_only_none,3.37,0.048828125,-0.07,1.52
+macro,mobilenet_v2,energy,abl_w_only_nodw,"so pesos, por tensor menos nas depthwise",10,w_only_none,-0.57,0.625,0.03,-0.26
+macro,mobilenet_v2,energy,abl_w_only_stem,"so pesos, por tensor so na conv de entrada",10,w_only_none,0.04,1.0,0.0,0.02
+macro,mobilenet_v2,energy,abl_w_only_pw,"so pesos, por tensor so nas pointwise 1x1",10,w_only_none,-0.35,1.0,0.03,-0.16
+macro,mobilenet_v2,energy,abl_w_only_head,"so pesos, por tensor so na ultima conv e no classificador",10,w_only_none,0.01,1.0,0.0,0.0
+macro,mobilenet_v2,energy,abl_w_only_none,nenhum peso quantizado (FP32 no dispositivo dos so-pesos),10,fp32,0.0,1.0,0.0,0.0
+macro,mobilenet_v2,knn,abl_base,"INT8, por tensor em tudo (padrao)",10,fp32,0.05,0.625,-0.14,
+macro,mobilenet_v2,knn,abl_dw_pt,"INT8, por tensor so nas depthwise",10,fp32,0.19,0.921875,-0.07,
+macro,mobilenet_v2,knn,abl_dw_pc,"INT8, por canal so nas depthwise",10,fp32,0.03,0.91015625,-0.03,
+macro,mobilenet_v2,knn,abl_pc,"INT8, por canal em tudo",10,fp32,0.23,0.203125,-0.1,
+macro,mobilenet_v2,knn,abl_w_only_pt,"so pesos, por tensor em tudo",10,fp32,0.16,1.0,-0.14,
+macro,mobilenet_v2,knn,abl_w_only_dw,"so pesos, por tensor so nas depthwise",10,w_only_none,0.31,0.556640625,-0.07,
+macro,mobilenet_v2,knn,abl_w_only_nodw,"so pesos, por tensor menos nas depthwise",10,w_only_none,-0.35,0.01953125,0.03,
+macro,mobilenet_v2,knn,abl_w_only_stem,"so pesos, por tensor so na conv de entrada",10,w_only_none,-0.05,0.431640625,0.0,
+macro,mobilenet_v2,knn,abl_w_only_pw,"so pesos, por tensor so nas pointwise 1x1",10,w_only_none,-0.36,0.0390625,0.03,
+macro,mobilenet_v2,knn,abl_w_only_head,"so pesos, por tensor so na ultima conv e no classificador",10,w_only_none,0.01,1.0,0.0,
+macro,mobilenet_v2,knn,abl_w_only_none,nenhum peso quantizado (FP32 no dispositivo dos so-pesos),10,fp32,0.0,1.0,0.0,
+macro,mobilenet_v2,mahalanobis,abl_base,"INT8, por tensor em tudo (padrao)",10,fp32,0.07,0.322265625,-0.14,
+macro,mobilenet_v2,mahalanobis,abl_dw_pt,"INT8, por tensor so nas depthwise",10,fp32,-0.07,0.49609375,-0.07,
+macro,mobilenet_v2,mahalanobis,abl_dw_pc,"INT8, por canal so nas depthwise",10,fp32,0.34,0.3125,-0.03,
+macro,mobilenet_v2,mahalanobis,abl_pc,"INT8, por canal em tudo",10,fp32,0.64,0.0546875,-0.1,
+macro,mobilenet_v2,mahalanobis,abl_w_only_pt,"so pesos, por tensor em tudo",10,fp32,0.32,0.232421875,-0.14,
+macro,mobilenet_v2,mahalanobis,abl_w_only_dw,"so pesos, por tensor so nas depthwise",10,w_only_none,0.28,0.375,-0.07,
+macro,mobilenet_v2,mahalanobis,abl_w_only_nodw,"so pesos, por tensor menos nas depthwise",10,w_only_none,0.19,0.232421875,0.03,
+macro,mobilenet_v2,mahalanobis,abl_w_only_stem,"so pesos, por tensor so na conv de entrada",10,w_only_none,-0.01,0.5703125,0.0,
+macro,mobilenet_v2,mahalanobis,abl_w_only_pw,"so pesos, por tensor so nas pointwise 1x1",10,w_only_none,0.19,0.275390625,0.03,
+macro,mobilenet_v2,mahalanobis,abl_w_only_head,"so pesos, por tensor so na ultima conv e no classificador",10,w_only_none,0.01,1.0,0.0,
+macro,mobilenet_v2,mahalanobis,abl_w_only_none,nenhum peso quantizado (FP32 no dispositivo dos so-pesos),10,fp32,0.0,1.0,0.0,
+micro,mobilenet_v3_large,msp,abl_base,"INT8, por tensor em tudo (padrao)",10,fp32,5.83,0.001953125,-0.32,1.0
+micro,mobilenet_v3_large,msp,abl_dw_pt,"INT8, por tensor so nas depthwise",10,fp32,4.76,0.00390625,-0.18,0.82
+micro,mobilenet_v3_large,msp,abl_dw_pc,"INT8, por canal so nas depthwise",10,fp32,2.61,0.009765625,0.14,0.45
+micro,mobilenet_v3_large,msp,abl_pc,"INT8, por canal em tudo",10,fp32,1.13,0.044921875,0.09,0.19
+micro,mobilenet_v3_large,msp,abl_w_only_pt,"so pesos, por tensor em tudo",10,fp32,5.08,0.001953125,-0.18,0.87
+micro,mobilenet_v3_large,msp,abl_w_only_dw,"so pesos, por tensor so nas depthwise",10,w_only_none,2.93,0.001953125,-0.05,0.5
+micro,mobilenet_v3_large,msp,abl_w_only_nodw,"so pesos, por tensor menos nas depthwise",10,w_only_none,2.29,0.013671875,0.05,0.39
+micro,mobilenet_v3_large,msp,abl_w_only_stem,"so pesos, por tensor so na conv de entrada",10,w_only_none,0.69,0.0078125,0.09,0.12
+micro,mobilenet_v3_large,msp,abl_w_only_pw,"so pesos, por tensor so nas pointwise 1x1",10,w_only_none,2.06,0.001953125,-0.04,0.35
+micro,mobilenet_v3_large,msp,abl_w_only_se,"so pesos, por tensor so no squeeze-excitation",10,w_only_none,-0.19,0.453125,0.05,-0.03
+micro,mobilenet_v3_large,msp,abl_w_only_head,"so pesos, por tensor so na ultima conv e no classificador",10,w_only_none,0.03,0.359375,0.0,0.0
+micro,mobilenet_v3_large,msp,abl_w_only_none,nenhum peso quantizado (FP32 no dispositivo dos so-pesos),10,fp32,0.0,1.0,0.0,0.0
+micro,mobilenet_v3_large,maxlogit,abl_base,"INT8, por tensor em tudo (padrao)",10,fp32,6.39,0.001953125,-0.32,1.0
+micro,mobilenet_v3_large,maxlogit,abl_dw_pt,"INT8, por tensor so nas depthwise",10,fp32,4.28,0.001953125,-0.18,0.67
+micro,mobilenet_v3_large,maxlogit,abl_dw_pc,"INT8, por canal so nas depthwise",10,fp32,2.46,0.00390625,0.14,0.39
+micro,mobilenet_v3_large,maxlogit,abl_pc,"INT8, por canal em tudo",10,fp32,1.0,0.01171875,0.09,0.16
+micro,mobilenet_v3_large,maxlogit,abl_w_only_pt,"so pesos, por tensor em tudo",10,fp32,5.01,0.001953125,-0.18,0.78
+micro,mobilenet_v3_large,maxlogit,abl_w_only_dw,"so pesos, por tensor so nas depthwise",10,w_only_none,2.51,0.005859375,-0.05,0.39
+micro,mobilenet_v3_large,maxlogit,abl_w_only_nodw,"so pesos, por tensor menos nas depthwise",10,w_only_none,2.16,0.001953125,0.05,0.34
+micro,mobilenet_v3_large,maxlogit,abl_w_only_stem,"so pesos, por tensor so na conv de entrada",10,w_only_none,0.62,0.04296875,0.09,0.1
+micro,mobilenet_v3_large,maxlogit,abl_w_only_pw,"so pesos, por tensor so nas pointwise 1x1",10,w_only_none,1.11,0.02734375,-0.04,0.17
+micro,mobilenet_v3_large,maxlogit,abl_w_only_se,"so pesos, por tensor so no squeeze-excitation",10,w_only_none,0.31,0.02734375,0.05,0.05
+micro,mobilenet_v3_large,maxlogit,abl_w_only_head,"so pesos, por tensor so na ultima conv e no classificador",10,w_only_none,-0.01,0.859375,0.0,-0.0
+micro,mobilenet_v3_large,maxlogit,abl_w_only_none,nenhum peso quantizado (FP32 no dispositivo dos so-pesos),10,fp32,0.0,1.0,0.0,0.0
+micro,mobilenet_v3_large,energy,abl_base,"INT8, por tensor em tudo (padrao)",10,fp32,7.38,0.001953125,-0.32,1.0
+micro,mobilenet_v3_large,energy,abl_dw_pt,"INT8, por tensor so nas depthwise",10,fp32,5.15,0.001953125,-0.18,0.7
+micro,mobilenet_v3_large,energy,abl_dw_pc,"INT8, por canal so nas depthwise",10,fp32,3.04,0.001953125,0.14,0.41
+micro,mobilenet_v3_large,energy,abl_pc,"INT8, por canal em tudo",10,fp32,1.33,0.009765625,0.09,0.18
+micro,mobilenet_v3_large,energy,abl_w_only_pt,"so pesos, por tensor em tudo",10,fp32,5.45,0.001953125,-0.18,0.74
+micro,mobilenet_v3_large,energy,abl_w_only_dw,"so pesos, por tensor so nas depthwise",10,w_only_none,2.4,0.0078125,-0.05,0.33
+micro,mobilenet_v3_large,energy,abl_w_only_nodw,"so pesos, por tensor menos nas depthwise",10,w_only_none,2.51,0.00390625,0.05,0.34
+micro,mobilenet_v3_large,energy,abl_w_only_stem,"so pesos, por tensor so na conv de entrada",10,w_only_none,0.9,0.0078125,0.09,0.12
+micro,mobilenet_v3_large,energy,abl_w_only_pw,"so pesos, por tensor so nas pointwise 1x1",10,w_only_none,1.53,0.029296875,-0.04,0.21
+micro,mobilenet_v3_large,energy,abl_w_only_se,"so pesos, por tensor so no squeeze-excitation",10,w_only_none,0.4,0.0078125,0.05,0.05
+micro,mobilenet_v3_large,energy,abl_w_only_head,"so pesos, por tensor so na ultima conv e no classificador",10,w_only_none,-0.08,0.421875,0.0,-0.01
+micro,mobilenet_v3_large,energy,abl_w_only_none,nenhum peso quantizado (FP32 no dispositivo dos so-pesos),10,fp32,0.0,1.0,0.0,0.0
+micro,mobilenet_v3_large,knn,abl_base,"INT8, por tensor em tudo (padrao)",10,fp32,4.85,0.005859375,-0.32,1.0
+micro,mobilenet_v3_large,knn,abl_dw_pt,"INT8, por tensor so nas depthwise",10,fp32,3.15,0.064453125,-0.18,0.65
+micro,mobilenet_v3_large,knn,abl_dw_pc,"INT8, por canal so nas depthwise",10,fp32,3.39,0.03515625,0.14,0.7
+micro,mobilenet_v3_large,knn,abl_pc,"INT8, por canal em tudo",10,fp32,-0.48,0.640625,0.09,-0.1
+micro,mobilenet_v3_large,knn,abl_w_only_pt,"so pesos, por tensor em tudo",10,fp32,3.65,0.013671875,-0.18,0.75
+micro,mobilenet_v3_large,knn,abl_w_only_dw,"so pesos, por tensor so nas depthwise",10,w_only_none,2.19,0.16015625,-0.05,0.45
+micro,mobilenet_v3_large,knn,abl_w_only_nodw,"so pesos, por tensor menos nas depthwise",10,w_only_none,1.69,0.416015625,0.05,0.35
+micro,mobilenet_v3_large,knn,abl_w_only_stem,"so pesos, por tensor so na conv de entrada",10,w_only_none,-0.4,0.91015625,0.09,-0.08
+micro,mobilenet_v3_large,knn,abl_w_only_pw,"so pesos, por tensor so nas pointwise 1x1",10,w_only_none,0.89,0.447265625,-0.04,0.18
+micro,mobilenet_v3_large,knn,abl_w_only_se,"so pesos, por tensor so no squeeze-excitation",10,w_only_none,-0.59,0.234375,0.05,-0.12
+micro,mobilenet_v3_large,knn,abl_w_only_head,"so pesos, por tensor so na ultima conv e no classificador",10,w_only_none,0.32,0.005859375,0.0,0.07
+micro,mobilenet_v3_large,knn,abl_w_only_none,nenhum peso quantizado (FP32 no dispositivo dos so-pesos),10,fp32,0.0,1.0,0.0,0.0
+micro,mobilenet_v3_large,mahalanobis,abl_base,"INT8, por tensor em tudo (padrao)",10,fp32,1.73,0.0625,-0.32,1.0
+micro,mobilenet_v3_large,mahalanobis,abl_dw_pt,"INT8, por tensor so nas depthwise",10,fp32,1.3,0.025390625,-0.18,0.75
+micro,mobilenet_v3_large,mahalanobis,abl_dw_pc,"INT8, por canal so nas depthwise",10,fp32,0.51,0.263671875,0.14,0.29
+micro,mobilenet_v3_large,mahalanobis,abl_pc,"INT8, por canal em tudo",10,fp32,-0.79,0.580078125,0.09,-0.46
+micro,mobilenet_v3_large,mahalanobis,abl_w_only_pt,"so pesos, por tensor em tudo",10,fp32,2.12,0.0390625,-0.18,1.23
+micro,mobilenet_v3_large,mahalanobis,abl_w_only_dw,"so pesos, por tensor so nas depthwise",10,w_only_none,0.81,0.10546875,-0.05,0.47
+micro,mobilenet_v3_large,mahalanobis,abl_w_only_nodw,"so pesos, por tensor menos nas depthwise",10,w_only_none,1.23,0.046875,0.05,0.71
+micro,mobilenet_v3_large,mahalanobis,abl_w_only_stem,"so pesos, por tensor so na conv de entrada",10,w_only_none,0.03,0.703125,0.09,0.02
+micro,mobilenet_v3_large,mahalanobis,abl_w_only_pw,"so pesos, por tensor so nas pointwise 1x1",10,w_only_none,1.21,0.064453125,-0.04,0.7
+micro,mobilenet_v3_large,mahalanobis,abl_w_only_se,"so pesos, por tensor so no squeeze-excitation",10,w_only_none,0.22,0.578125,0.05,0.13
+micro,mobilenet_v3_large,mahalanobis,abl_w_only_head,"so pesos, por tensor so na ultima conv e no classificador",10,w_only_none,0.04,0.3125,0.0,0.02
+micro,mobilenet_v3_large,mahalanobis,abl_w_only_none,nenhum peso quantizado (FP32 no dispositivo dos so-pesos),10,fp32,0.0,1.0,0.0,0.0
+micro,mobilenet_v2,msp,abl_base,"INT8, por tensor em tudo (padrao)",10,fp32,3.38,0.01953125,-0.18,1.0
+micro,mobilenet_v2,msp,abl_dw_pt,"INT8, por tensor so nas depthwise",10,fp32,2.96,0.02734375,-0.09,0.87
+micro,mobilenet_v2,msp,abl_dw_pc,"INT8, por canal so nas depthwise",10,fp32,-0.3,0.7890625,-0.14,-0.09
+micro,mobilenet_v2,msp,abl_pc,"INT8, por canal em tudo",10,fp32,0.34,0.57421875,-0.09,0.1
+micro,mobilenet_v2,msp,abl_w_only_pt,"so pesos, por tensor em tudo",10,fp32,3.46,0.123046875,-0.18,1.02
+micro,mobilenet_v2,msp,abl_w_only_dw,"so pesos, por tensor so nas depthwise",10,w_only_none,3.09,0.1640625,-0.14,0.91
+micro,mobilenet_v2,msp,abl_w_only_nodw,"so pesos, por tensor menos nas depthwise",10,w_only_none,0.75,0.607421875,0.0,0.22
+micro,mobilenet_v2,msp,abl_w_only_stem,"so pesos, por tensor so na conv de entrada",10,w_only_none,0.13,0.234375,0.0,0.04
+micro,mobilenet_v2,msp,abl_w_only_pw,"so pesos, por tensor so nas pointwise 1x1",10,w_only_none,0.57,0.6171875,0.0,0.17
+micro,mobilenet_v2,msp,abl_w_only_head,"so pesos, por tensor so na ultima conv e no classificador",10,w_only_none,0.04,0.3125,0.0,0.01
+micro,mobilenet_v2,msp,abl_w_only_none,nenhum peso quantizado (FP32 no dispositivo dos so-pesos),10,fp32,0.0,1.0,0.0,0.0
+micro,mobilenet_v2,maxlogit,abl_base,"INT8, por tensor em tudo (padrao)",10,fp32,2.75,0.01171875,-0.18,1.0
+micro,mobilenet_v2,maxlogit,abl_dw_pt,"INT8, por tensor so nas depthwise",10,fp32,2.8,0.0234375,-0.09,1.02
+micro,mobilenet_v2,maxlogit,abl_dw_pc,"INT8, por canal so nas depthwise",10,fp32,0.04,0.94140625,-0.14,0.02
+micro,mobilenet_v2,maxlogit,abl_pc,"INT8, por canal em tudo",10,fp32,-0.13,0.7578125,-0.09,-0.05
+micro,mobilenet_v2,maxlogit,abl_w_only_pt,"so pesos, por tensor em tudo",10,fp32,2.72,0.130859375,-0.18,0.99
+micro,mobilenet_v2,maxlogit,abl_w_only_dw,"so pesos, por tensor so nas depthwise",10,w_only_none,2.47,0.16015625,-0.14,0.9
+micro,mobilenet_v2,maxlogit,abl_w_only_nodw,"so pesos, por tensor menos nas depthwise",10,w_only_none,0.63,0.05859375,0.0,0.23
+micro,mobilenet_v2,maxlogit,abl_w_only_stem,"so pesos, por tensor so na conv de entrada",10,w_only_none,0.01,1.0,0.0,0.0
+micro,mobilenet_v2,maxlogit,abl_w_only_pw,"so pesos, por tensor so nas pointwise 1x1",10,w_only_none,0.42,0.431640625,0.0,0.15
+micro,mobilenet_v2,maxlogit,abl_w_only_head,"so pesos, por tensor so na ultima conv e no classificador",10,w_only_none,-0.01,0.9375,0.0,-0.0
+micro,mobilenet_v2,maxlogit,abl_w_only_none,nenhum peso quantizado (FP32 no dispositivo dos so-pesos),10,fp32,0.0,1.0,0.0,0.0
+micro,mobilenet_v2,energy,abl_base,"INT8, por tensor em tudo (padrao)",10,fp32,2.84,0.005859375,-0.18,1.0
+micro,mobilenet_v2,energy,abl_dw_pt,"INT8, por tensor so nas depthwise",10,fp32,3.25,0.02734375,-0.09,1.14
+micro,mobilenet_v2,energy,abl_dw_pc,"INT8, por canal so nas depthwise",10,fp32,0.08,0.84375,-0.14,0.03
+micro,mobilenet_v2,energy,abl_pc,"INT8, por canal em tudo",10,fp32,-0.21,0.7578125,-0.09,-0.07
+micro,mobilenet_v2,energy,abl_w_only_pt,"so pesos, por tensor em tudo",10,fp32,3.12,0.125,-0.18,1.1
+micro,mobilenet_v2,energy,abl_w_only_dw,"so pesos, por tensor so nas depthwise",10,w_only_none,2.68,0.130859375,-0.14,0.94
+micro,mobilenet_v2,energy,abl_w_only_nodw,"so pesos, por tensor menos nas depthwise",10,w_only_none,0.81,0.07421875,0.0,0.29
+micro,mobilenet_v2,energy,abl_w_only_stem,"so pesos, por tensor so na conv de entrada",10,w_only_none,0.06,0.484375,0.0,0.02
+micro,mobilenet_v2,energy,abl_w_only_pw,"so pesos, por tensor so nas pointwise 1x1",10,w_only_none,0.65,0.09765625,0.0,0.23
+micro,mobilenet_v2,energy,abl_w_only_head,"so pesos, por tensor so na ultima conv e no classificador",10,w_only_none,0.01,1.0,0.0,0.0
+micro,mobilenet_v2,energy,abl_w_only_none,nenhum peso quantizado (FP32 no dispositivo dos so-pesos),10,fp32,0.0,1.0,0.0,0.0
+micro,mobilenet_v2,knn,abl_base,"INT8, por tensor em tudo (padrao)",10,fp32,2.15,0.048828125,-0.18,1.0
+micro,mobilenet_v2,knn,abl_dw_pt,"INT8, por tensor so nas depthwise",10,fp32,2.05,0.068359375,-0.09,0.95
+micro,mobilenet_v2,knn,abl_dw_pc,"INT8, por canal so nas depthwise",10,fp32,0.86,0.3359375,-0.14,0.4
+micro,mobilenet_v2,knn,abl_pc,"INT8, por canal em tudo",10,fp32,0.47,0.201171875,-0.09,0.22
+micro,mobilenet_v2,knn,abl_w_only_pt,"so pesos, por tensor em tudo",10,fp32,1.85,0.193359375,-0.18,0.86
+micro,mobilenet_v2,knn,abl_w_only_dw,"so pesos, por tensor so nas depthwise",10,w_only_none,2.03,0.130859375,-0.14,0.94
+micro,mobilenet_v2,knn,abl_w_only_nodw,"so pesos, por tensor menos nas depthwise",10,w_only_none,0.22,0.359375,0.0,0.1
+micro,mobilenet_v2,knn,abl_w_only_stem,"so pesos, por tensor so na conv de entrada",10,w_only_none,-0.04,0.8359375,0.0,-0.02
+micro,mobilenet_v2,knn,abl_w_only_pw,"so pesos, por tensor so nas pointwise 1x1",10,w_only_none,0.21,0.4765625,0.0,0.1
+micro,mobilenet_v2,knn,abl_w_only_head,"so pesos, por tensor so na ultima conv e no classificador",10,w_only_none,0.01,1.0,0.0,0.0
+micro,mobilenet_v2,knn,abl_w_only_none,nenhum peso quantizado (FP32 no dispositivo dos so-pesos),10,fp32,0.0,1.0,0.0,0.0
+micro,mobilenet_v2,mahalanobis,abl_base,"INT8, por tensor em tudo (padrao)",10,fp32,-0.04,0.71875,-0.18,
+micro,mobilenet_v2,mahalanobis,abl_dw_pt,"INT8, por tensor so nas depthwise",10,fp32,-0.02,0.681640625,-0.09,
+micro,mobilenet_v2,mahalanobis,abl_dw_pc,"INT8, por canal so nas depthwise",10,fp32,0.04,0.46875,-0.14,
+micro,mobilenet_v2,mahalanobis,abl_pc,"INT8, por canal em tudo",10,fp32,-0.01,1.0,-0.09,
+micro,mobilenet_v2,mahalanobis,abl_w_only_pt,"so pesos, por tensor em tudo",10,fp32,-0.0,0.8671875,-0.18,
+micro,mobilenet_v2,mahalanobis,abl_w_only_dw,"so pesos, por tensor so nas depthwise",10,w_only_none,-0.05,0.48828125,-0.14,
+micro,mobilenet_v2,mahalanobis,abl_w_only_nodw,"so pesos, por tensor menos nas depthwise",10,w_only_none,0.02,0.625,0.0,
+micro,mobilenet_v2,mahalanobis,abl_w_only_stem,"so pesos, por tensor so na conv de entrada",10,w_only_none,-0.01,1.0,0.0,
+micro,mobilenet_v2,mahalanobis,abl_w_only_pw,"so pesos, por tensor so nas pointwise 1x1",10,w_only_none,0.04,0.25,0.0,
+micro,mobilenet_v2,mahalanobis,abl_w_only_head,"so pesos, por tensor so na ultima conv e no classificador",10,w_only_none,0.0,1.0,0.0,
+micro,mobilenet_v2,mahalanobis,abl_w_only_none,nenhum peso quantizado (FP32 no dispositivo dos so-pesos),10,fp32,0.0,1.0,0.0,
